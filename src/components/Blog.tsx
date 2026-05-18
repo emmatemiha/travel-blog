@@ -1,7 +1,8 @@
 import axios from 'axios';
 import React from "react";
-import { useParams, Link } from 'react-router-dom';
-import { Paper, Alert, AlertTitle, Button, badgeClasses } from "@mui/material";
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Paper, Alert, AlertTitle, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
+import { useAuthStore } from "../store";
 
 const Blog = () => {
     const {id} = useParams()
@@ -13,6 +14,10 @@ const Blog = () => {
     const [errorFlag, setErrorFlag] = React.useState(false)
     const [errorMessage, setErrorMessage] = React.useState("")
     const [similarBlogs, setSimilarBlogs] = React.useState<Array<any>>([])
+    const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false)
+    const authToken = useAuthStore(state => state.authToken)
+    const userId = useAuthStore(state => state.userId)
+    const navigate = useNavigate()
 
     React.useEffect(() => {
         getBlog()
@@ -32,6 +37,23 @@ const Blog = () => {
             }, (error) => {
                 setErrorFlag(true)
                 setErrorMessage(error.toString())
+            })
+    }
+
+    const deleteBlog = () => {
+        axios.delete('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + id, {
+            headers: { 'X-Authorization': authToken }
+        })
+            .then((response) => {
+                navigate('/blogs')
+            }, (error) => {
+                setOpenDeleteDialog(false)
+                setErrorFlag(true)
+                if (error.response && error.response.status === 403) {
+                    setErrorMessage("Cannot delete a blog that has comments")
+                } else {
+                    setErrorMessage(error.toString())
+                }
             })
     }
 
@@ -146,6 +168,14 @@ const Blog = () => {
             })
     }
 
+    const handleDeleteDialogOpen = () => {
+        setOpenDeleteDialog(true)
+    }
+
+    const handleDeleteDialogClose = () => {
+        setOpenDeleteDialog(false)
+    }
+
     if (errorFlag) {
         return (
             <div>
@@ -164,7 +194,7 @@ const Blog = () => {
     return (
         <div style={{padding: '20px'}}>
             <Button variant="contained" component={Link} to="/blogs"
-                sx={{backgroundColor: "#ff96bf", "&:hover": {backgroundColor: "#fa84b2"}}}>
+                sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}}}>
                 Back to Blogs
             </Button>
             <Paper elevation={3} style={{padding: '20px', marginTop: '16px'}}>
@@ -185,6 +215,34 @@ const Blog = () => {
                 {blog.series && <p><b>Series:</b> {blog.series}</p>}
                 <p><b>Description:</b> {blog.description}</p>
                 <p><b>Unique commenters:</b> {blog.numberOfUniqueCommenters}</p>
+
+                {userId === blog.creatorId && (
+                    <div style={{display: 'flex', gap: '12px', marginTop: '16px'}}>
+                        <Button variant="outlined" onClick={() => navigate('/blogs/' + id + '/edit')}>
+                            Edit Blog
+                        </Button>
+                        <Button variant="outlined" color="error" onClick={handleDeleteDialogOpen}>
+                            Delete Blog
+                        </Button>
+                    </div>
+                )}
+
+                <Dialog
+                    open={openDeleteDialog}
+                    onClose={handleDeleteDialogClose}>
+                    <DialogTitle>
+                        Delete Blog?
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Are you sure you want to delete this blog?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDeleteDialogClose}>Cancel</Button>
+                        <Button variant="outlined" color="error" onClick={deleteBlog}>Delete</Button>
+                    </DialogActions>
+                </Dialog>
 
                 <div>
                     <h3>Reactions</h3>
@@ -232,7 +290,7 @@ const Blog = () => {
                                     <p>{new Date(b.creationDate).toLocaleDateString('en-NZ')}</p>
                                     <p>{b.numReactions} reactions</p>
                                     <Button variant="contained" size="small" component={Link} to={"/blogs/" + b.blogId}
-                                        sx={{backgroundColor: "#ff96bf", "&:hover": {backgroundColor: "#fa84b2"}}}>
+                                        sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}}}>
                                         View
                                     </Button>
                                 </div>

@@ -8,11 +8,13 @@ import MyBlogs from "./components/MyBlogs";
 import NotFound from "./components/NotFound";
 import Profile from "./components/Profile";
 import Register from "./components/Register";
+import Navbar from "./components/Navbar";
 
 function App() {
   return (
     <div className="App">
       <Router>
+        <Navbar/>
         <Routes>
           <Route path="/" element={<Blogs/>}/>
           <Route path="/blogs" element={<Blogs/>}/>

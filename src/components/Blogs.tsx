@@ -156,7 +156,7 @@ const Blogs = () => {
                 </TableCell>
                 <TableCell>
                     <Button variant="contained" size="small" component={Link} to={"/blogs/" + row.blogId}
-                        sx={{backgroundColor: "#ff96bf", "&:hover": {backgroundColor: "#fa84b2"}}}>
+                        sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}}}>
                         View
                     </Button>
                 </TableCell>
@@ -280,9 +280,9 @@ const Blogs = () => {
                             showFirstButton
                             showLastButton
                             sx={{
-                                '& .MuiPaginationItem-root': {color: '#ff96bf',},
-                                '& .Mui-selected': {backgroundColor: '#ff96bf !important', color: 'white',},
-                                '& .Mui-selected:hover': {backgroundColor: '#fa84b2 !important',},
+                                '& .MuiPaginationItem-root': {color: '#0c2c1b',},
+                                '& .Mui-selected': {backgroundColor: '#0c2c1b !important', color: 'white',},
+                                '& .Mui-selected:hover': {backgroundColor: '#071a10 !important',},
                             }}
                         />
                     </div>
