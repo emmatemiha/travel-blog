@@ -14,10 +14,24 @@ const Login = () => {
     const setAuth = useAuthStore(state => state.setAuth)
     const navigate = useNavigate()
 
+    const inputStyle = {
+        height: '56px',
+        padding: '0 14px',
+        fontSize: '16px',
+        borderRadius: '6px',
+        border: '1px solid #0c2c1b',
+        fontFamily: "'DM Sans', sans-serif",
+        width: '100%',
+        boxSizing: 'border-box' as any,
+        color: '#0c2c1b',
+        outline: 'none'
+    }
+
     const card = { // so the page doesn't look as cramped
-        padding: "20px",
-        margin: "20px",
-        maxWidth: "400px"
+        padding: "32px",
+        width: "400px",
+        border: '1px solid #0c2c1b',
+        borderRadius: '12px'
     }
 
     const Login = () => {
@@ -45,9 +59,9 @@ const Login = () => {
     }
 
     return (
-        <div>
-            <Paper elevation={3} style={card}>
-                <h1 style={{textAlign: 'center'}}>Log in</h1>
+        <div style={{minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eef2ee'}}>
+            <Paper elevation={0} style={card}>
+                <h1 style={{textAlign: 'center', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif", margin: '0 0 24px 0'}}>Log in</h1>
                 {errorFlag &&
                     <Alert severity="error">
                         <AlertTitle>Error</AlertTitle>
@@ -59,7 +73,8 @@ const Login = () => {
                         placeholder="Email*"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        style={{height: '56px', padding: '0 14px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc', fontFamily: 'inherit'}}
+                        className="green-placeholder"
+                        style={inputStyle}
                     />
                     <div style={{position: 'relative'}}>
                         <input
@@ -67,11 +82,12 @@ const Login = () => {
                             placeholder="Password*"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            style={{height: '56px', padding: '0 14px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box'}}
+                            className="green-placeholder"
+                            style={inputStyle}
                         />
                         <VisibilityIcon
                             onClick={() => setShowPassword(!showPassword)}
-                            style={{position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#666'}}
+                            style={{position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#0c2c1b'}}
                         />
                     </div>
                     <Button variant="contained" fullWidth onClick={Login}
@@ -79,13 +95,12 @@ const Login = () => {
                     >
                         Log in
                     </Button>
-                    <p style={{textAlign: 'center'}}>Don't have an account? <Link to="/register">Register</Link></p>
+                    <p style={{textAlign: 'center', color: '#0c2c1b'}}>Don't have an account? <Link to="/register" style={{color: '#0c2c1b'}}>Sign up</Link></p>
                 </div>
             </Paper>
         </div>
     )
 }
-
 
 
 export default Login;

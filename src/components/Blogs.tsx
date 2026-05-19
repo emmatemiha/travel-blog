@@ -1,7 +1,8 @@
 import axios from 'axios';
 import React from "react";
 import { Link } from 'react-router-dom';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Alert, AlertTitle, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Button, Pagination } from "@mui/material";
+import { Paper, Alert, AlertTitle, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Button, Pagination } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
 
 const Blogs = () => {
     const [blogs, setBlogs] = React.useState<Array<any>>([])
@@ -14,7 +15,7 @@ const Blogs = () => {
     const [selectedCityIds, setSelectedCityIds] = React.useState<number[]>([])
     const [selectedCategoryIds, setSelectedCategoryIds] = React.useState<number[]>([])
     const [currentPage, setCurrentPage] = React.useState(1)
-    const pageSize = 10
+    const pageSize = 9
     const [count, setCount] = React.useState(0) // to keep track of pagination
     const [numReactions, setNumReactions] = React.useState("")
 
@@ -36,21 +37,6 @@ const Blogs = () => {
     React.useEffect(() => {
         getBlogs()
     }, [sortBy, searchQuery, selectedCityIds, selectedCategoryIds, currentPage, numReactions]) // reruns when these change
-
-    interface HeadCell { // tells table what datatype it displays
-        id: string;
-        label: string;
-        numeric: boolean;
-    }
-    const headCells: readonly HeadCell[] = [
-        { id: 'title', label: 'Title', numeric: false },
-        { id: 'date', label: 'Date', numeric: false },
-        { id: 'creator', label: 'Creator', numeric: false },
-        { id: 'city', label: 'City', numeric: false },
-        { id: 'categories', label: 'Category', numeric: false },
-        { id: 'reactions', label: 'Reactions', numeric: true },
-        { id: 'link', label: '', numeric: false },
-    ];
 
     const getBlogs = () => {
         // building the url with the parameters that can change
@@ -135,32 +121,61 @@ const Blogs = () => {
 
     const blog_rows = () => {
         return blogs.map((row: any) =>
-            <TableRow hover tabIndex={-1} key={row.blogId}>
-                <TableCell>
-                    {row.title}
-                </TableCell>
-                <TableCell>
-                    {new Date(row.creationDate).toLocaleDateString('en-NZ')}
-                </TableCell>
-                <TableCell>
-                    {row.creatorFirstName} {row.creatorLastName}
-                </TableCell>
-                <TableCell>
-                    {getCityName(row.cityId)}
-                </TableCell>
-                <TableCell>
-                    {getCategoryNames(row.categoryIds)}
-                </TableCell>
-                <TableCell align="right">
-                    {row.numReactions}
-                </TableCell>
-                <TableCell>
-                    <Button variant="contained" size="small" component={Link} to={"/blogs/" + row.blogId}
-                        sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}}}>
+            <div key={row.blogId} style={{
+                background: 'white',
+                borderRadius: '12px',
+                border: '1px solid #0c2c1b',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+            }}>
+                <div style={{ padding: '16px', textAlign: 'center' }}>
+                    <div style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: '22px',
+                        color: '#0c2c1b',
+                        fontWeight: 700,
+                        textDecoration: 'underline',
+                        marginBottom: '8px',
+                    }}>
+                        {row.title}
+                    </div>
+                    <div style={{ fontSize: '14px', color: '#0c2c1b', marginBottom: '4px' }}>
+                        By {row.creatorFirstName} {row.creatorLastName}
+                    </div>
+                    <div style={{ fontSize: '14px', color: '#0c2c1b' }}>
+                        {new Date(row.creationDate).toLocaleDateString('en-NZ')}
+                    </div>
+                </div>
+
+                <img
+                    src={'https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + row.blogId + '/image'}
+                    alt={row.title}
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                    style={{ width: '100%', height: '160px', objectFit: 'cover' }}
+                />
+
+                <div style={{ padding: '12px 16px 16px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+                    <div style={{ fontSize: '14px', color: '#0c2c1b' }}>
+                        📍 {getCityName(row.cityId)}
+                    </div>
+                    <div style={{ fontSize: '14px', color: '#0c2c1b' }}>
+                        {getCategoryNames(row.categoryIds)}
+                    </div>
+                    <div style={{ fontSize: '14px', color: '#0c2c1b' }}>
+                        ♡ {row.numReactions} {row.numReactions === 1 ? 'reaction' : 'reactions'}
+                    </div>
+                    <Button
+                        variant="contained"
+                        size="small"
+                        component={Link}
+                        to={"/blogs/" + row.blogId}
+                        sx={{ backgroundColor: "#0c2c1b", "&:hover": { backgroundColor: "#071a10" } }}
+                    >
                         View
                     </Button>
-                </TableCell>
-            </TableRow>
+                </div>
+            </div>
         )
     }
 
@@ -177,119 +192,203 @@ const Blogs = () => {
         )
     } else {
         return (
-            <div>
-                <Paper elevation={3} style={card}>
-                    <h1>Travel Blogs</h1>
+            <div style={{ background: '#eef2ee', minHeight: '100vh', padding: '20px' }}>
+                <div style={{
+                    background: 'white',
+                    borderRadius: '10px',
+                    padding: '12px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    flexWrap: 'wrap',
+                    marginBottom: '20px',
+                    border: '1px solid #0c2c1b',
+                }}>
+                    <span style={{ fontSize: '14px', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>Sort by:</span>
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        style={{
+                            height: '38px',
+                            padding: '0 10px',
+                            fontSize: '14px',
+                            borderRadius: '6px',
+                            border: '1px solid #0c2c1b',
+                            fontFamily: "'DM Sans', sans-serif",
+                            background: 'white',
+                            color: '#0c2c1b',
+                        }}
+                    >
+                        <option value="ALPHABETICAL_ASC">Title A-Z</option>
+                        <option value="ALPHABETICAL_DESC">Title Z-A</option>
+                        <option value="REACTIONS_ASC">Least reactions</option>
+                        <option value="REACTIONS_DESC">Most reactions</option>
+                        <option value="CREATED_DESC">Newest first</option>
+                        <option value="CREATED_ASC">Oldest first</option>
+                    </select>
 
-                    <div style={{display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '16px'}}>
+                    <span style={{ fontSize: '14px', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>Filter by:</span>
+
+                    <FormControl size="small" style={{ minWidth: 140 }}>
+                        <InputLabel style={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', fontSize: '14px' }}>City</InputLabel>
+                        <Select
+                            multiple
+                            value={selectedCityIds}
+                            onChange={(e) => { setSelectedCityIds(e.target.value as number[]); setCurrentPage(1) }}
+                            input={<OutlinedInput label="City" />}
+                            renderValue={(selected) => `${selected.length} selected`}
+                            sx={{
+                                fontFamily: "'DM Sans', sans-serif",
+                                fontSize: '14px',
+                                height: '38px',
+                                color: '#0c2c1b',
+
+                                '& .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: '#0c2c1b',
+                                },
+
+                                '&:hover .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: '#0c2c1b',
+                                },
+
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: '#0c2c1b',
+                                },
+
+                                '& .MuiSvgIcon-root': {
+                                    color: '#0c2c1b',
+                                }
+                            }}
+                        >
+                            {cities.map((city: any) => (
+                                <MenuItem key={city.cityId} value={city.cityId}>
+                                    <Checkbox
+                                        checked={selectedCityIds.includes(city.cityId)}
+                                        size="small"
+                                        sx={{ color: '#0c2c1b', '&.Mui-checked': { color: '#0c2c1b' } }}
+                                    />
+                                    <ListItemText primary={city.name} />
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <FormControl size="small" style={{ minWidth: 160 }}>
+                        <InputLabel style={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', fontSize: '14px' }}>Category</InputLabel>
+                        <Select
+                            multiple
+                            value={selectedCategoryIds}
+                            onChange={(e) => { setSelectedCategoryIds(e.target.value as number[]); setCurrentPage(1) }}
+                            input={<OutlinedInput label="Category" />}
+                            renderValue={(selected) => `${selected.length} selected`}
+                            sx={{
+                                fontFamily: "'DM Sans', sans-serif",
+                                fontSize: '14px',
+                                height: '38px',
+                                color: '#0c2c1b',
+
+                                '& .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: '#0c2c1b',
+                                },
+
+                                '&:hover .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: '#0c2c1b',
+                                },
+
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: '#0c2c1b',
+                                },
+
+                                '& .MuiSvgIcon-root': {
+                                    color: '#0c2c1b',
+                                }
+                            }}
+                        >
+                            {categories.map((category: any) => (
+                                <MenuItem key={category.categoryId} value={category.categoryId}>
+                                    <Checkbox
+                                        checked={selectedCategoryIds.includes(category.categoryId)}
+                                        size="small"
+                                        sx={{ color: '#0c2c1b', '&.Mui-checked': { color: '#0c2c1b' } }}
+                                    />
+                                    <ListItemText primary={category.name} />
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <input
+                        type="number"
+                        placeholder="Min reactions"
+                        value={numReactions}
+                        min={0}
+                        onChange={handleNumReactionsChange}
+                        className="green-placeholder"
+                        style={{
+                            height: '38px',
+                            padding: '0 10px',
+                            fontSize: '14px',
+                            borderRadius: '6px',
+                            border: '1px solid #0c2c1b',
+                            fontFamily: "'DM Sans', sans-serif",
+                            width: '130px',
+                            color: '#0c2c1b',
+                        }}
+                    />
+
+                    {/* Search with icon inside */}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        border: '1px solid #0c2c1b',
+                        borderRadius: '6px',
+                        height: '38px',
+                        paddingLeft: '10px',
+                        background: 'white',
+                        flex: 1,
+                        minWidth: '160px',
+                    }}>
                         <input
                             type="text"
                             placeholder="Search blogs..."
                             value={searchQuery}
-                            onChange={(e) => {setSearchQuery(e.target.value)
-                                setCurrentPage(1)}}
-                            style={{height: '56px', padding: '0 14px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc'}}
-                        />
-
-                        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-                            style={{height: '56px', padding: '0 14px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc'}}>
-                            <option value="ALPHABETICAL_ASC">Title A-Z</option>
-                            <option value="ALPHABETICAL_DESC">Title Z-A</option>
-                            <option value="REACTIONS_ASC">Least reactions</option>
-                            <option value="REACTIONS_DESC">Most reactions</option>
-                            <option value="CREATED_DESC">Newest first</option>
-                            <option value="CREATED_ASC">Oldest first</option>
-                        </select>
-
-                        <FormControl style={{minWidth: 200}}>
-                            <InputLabel>Filter by City</InputLabel>
-                            <Select
-                                multiple
-                                value={selectedCityIds}
-                                onChange={(e) => {
-                                    setSelectedCityIds(e.target.value as number[])
-                                    setCurrentPage(1)
-                                }}
-                                input={<OutlinedInput label="Filter by City"/>}
-                                renderValue={(selected) => `${selected.length} selected`}>
-                                {cities.map((city: any) => (
-                                    <MenuItem key={city.cityId} value={city.cityId}>
-                                        <Checkbox checked={selectedCityIds.includes(city.cityId)}/>
-                                        <ListItemText primary={city.name}/>
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-
-                        <FormControl style={{minWidth: 200}}>
-                            <InputLabel>Filter by Category</InputLabel>
-                            <Select
-                                multiple
-                                value={selectedCategoryIds}
-                                onChange={(e) => {
-                                    setSelectedCategoryIds(e.target.value as number[])
-                                    setCurrentPage(1)
-                                }}
-                                input={<OutlinedInput label="Filter by Category"/>}
-                                renderValue={(selected) => `${selected.length} selected`}>
-                                {categories.map((category: any) => (
-                                    <MenuItem key={category.categoryId} value={category.categoryId}>
-                                        <Checkbox checked={selectedCategoryIds.includes(category.categoryId)}/>
-                                        <ListItemText primary={category.name}/>
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-
-                        <input
-                            type="number"
-                            placeholder="Minimum Reactions"
-                            value={numReactions}
-                            min={0}
-                            onChange={handleNumReactionsChange}
-                            style={{height: '56px', padding: '0 14px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc', width: '160px', fontFamily: 'inherit'}}
-                        />
-                    </div>
-
-                    <TableContainer component={Paper}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    {headCells.map((headCell) => (
-                                        <TableCell
-                                            key={headCell.id}
-                                            align={headCell.numeric ? 'right' : 'left'}
-                                            padding={'normal'}>
-                                            {headCell.label}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {blog_rows()}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-
-                    <div style={{display: 'flex', justifyContent: 'center', marginTop: '20px'}}>
-                        <Pagination
-                            count={Math.ceil(count / pageSize)}
-                            page={currentPage}
-                            onChange={(event, value) => setCurrentPage(value)}
-                            shape="rounded"
-                            showFirstButton
-                            showLastButton
-                            sx={{
-                                '& .MuiPaginationItem-root': {color: '#0c2c1b',},
-                                '& .Mui-selected': {backgroundColor: '#0c2c1b !important', color: 'white',},
-                                '& .Mui-selected:hover': {backgroundColor: '#071a10 !important',},
+                            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1) }}
+                            className="green-placeholder"
+                            style={{
+                                border: 'none',
+                                outline: 'none',
+                                fontSize: '14px',
+                                fontFamily: "'DM Sans', sans-serif",
+                                flex: 1,
+                                background: 'transparent',
+                                color: '#0c2c1b',
                             }}
                         />
+                        <SearchIcon style={{ color: '#0c2c1b', fontSize: '20px', marginRight: '8px' }} />
                     </div>
+                </div>
 
-                </Paper>
-            </div>
-        )
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+                    {blog_rows()}
+                </div>
+
+                <div style={{display: 'flex', justifyContent: 'center', marginTop: '20px'}}>
+                    <Pagination
+                        count={Math.ceil(count / pageSize)}
+                        page={currentPage}
+                        onChange={(event, value) => setCurrentPage(value)}
+                        shape="rounded"
+                        showFirstButton
+                        showLastButton
+                        sx={{
+                            '& .MuiPaginationItem-root': {color: '#0c2c1b',},
+                            '& .Mui-selected': {backgroundColor: '#0c2c1b !important', color: 'white',},
+                            '& .Mui-selected:hover': {backgroundColor: '#071a10 !important',},
+                        }}
+                    />
+                </div>
+            </div>         
+        )    
     }
 }
 

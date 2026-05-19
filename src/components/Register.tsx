@@ -17,10 +17,24 @@ const Register = () => {
     const setAuth = useAuthStore(state => state.setAuth)
     const navigate = useNavigate()
 
+    const inputStyle = {
+        height: '56px',
+        padding: '0 14px',
+        fontSize: '16px',
+        borderRadius: '6px',
+        border: '1px solid #0c2c1b',
+        fontFamily: "'DM Sans', sans-serif",
+        width: '100%',
+        boxSizing: 'border-box' as any,
+        color: '#0c2c1b',
+        outline: 'none'
+    }
+
     const card = {
-        padding: "20px",
-        margin: "20px",
-        maxWidth: "400px"
+        padding: "32px",
+        width: "400px",
+        border: '1px solid #0c2c1b',
+        borderRadius: '12px'
     }
 
     const validateEmail = (email: string) => {
@@ -53,7 +67,7 @@ const Register = () => {
             password: password
         })
             .then((response) => {
-                const userId = response.data.userId
+                //const userId = response.data.userId
                 axios.post('https://seng365.csse.canterbury.ac.nz/api/v1/users/login', {
                     email: email,
                     password: password
@@ -79,9 +93,9 @@ const Register = () => {
     }
 
     return (
-        <div>
-            <Paper elevation={3} style={card}>
-                <h1 style={{textAlign: 'center'}}>Register</h1>
+        <div style={{minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eef2ee'}}>
+            <Paper elevation={0} style={card}>
+                <h1 style={{textAlign: 'center', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif", margin: '0 0 24px 0'}}>Sign up</h1>
                 {errorFlag &&
                     <Alert severity="error">
                         <AlertTitle>Error</AlertTitle>
@@ -93,21 +107,24 @@ const Register = () => {
                         placeholder="First Name*"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        style={{height: '56px', padding: '0 14px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc', fontFamily: 'inherit'}}
+                        className="green-placeholder"
+                        style={inputStyle}
                     />
                     <input
                         type="text"
                         placeholder="Last Name*"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        style={{height: '56px', padding: '0 14px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc', fontFamily: 'inherit'}}
+                        className="green-placeholder"
+                        style={inputStyle}
                     />
                     <input
                         type="email"
                         placeholder="Email*"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        style={{height: '56px', padding: '0 14px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc', fontFamily: 'inherit'}}
+                        className="green-placeholder"
+                        style={inputStyle}
                     />
                     <div style={{position: 'relative'}}>
                         <input
@@ -115,28 +132,36 @@ const Register = () => {
                             placeholder="Password (min 6 characters)*"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            style={{height: '56px', padding: '0 14px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box'}}
+                            className="green-placeholder"
+                            style={inputStyle}
                         />
                         <VisibilityIcon
                             onClick={() => setShowPassword(!showPassword)}
-                            style={{position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#666'}}
+                            style={{position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#0c2c1b'}}
                         />
                     </div>
 
-                    <div>
-                        <p style={{margin: '0 0 8px 0'}}>Profile Picture (optional)</p>
-                        <input
-                            type="file"
-                            accept="image/jpeg, image/png, image/gif"
-                            onChange={(e) => setProfilePic(e.target.files ? e.target.files[0] : null)}
-                        />
+                    <div style={{textAlign: 'center'}}>
+                        <p style={{margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif"}}>Profile picture (optional)</p>
+                        <label style={{cursor: 'pointer', color: '#0c2c1b', border: '1px solid #0c2c1b', borderRadius: '6px', padding: '8px 16px', fontFamily: "'DM Sans', sans-serif", fontSize: '14px'}}>
+                            Choose file
+                            <input
+                                type="file"
+                                accept="image/jpeg, image/png, image/gif"
+                                onChange={(e) => setProfilePic(e.target.files ? e.target.files[0] : null)}
+                                style={{display: 'none'}}
+                            />
+                        </label>
+                        {profilePic && <p style={{color: '#0c2c1b', fontSize: '13px', marginTop: '4px'}}>{profilePic.name}</p>}
+                        {!profilePic && <p style={{color: '#999', fontSize: '13px', marginTop: '4px'}}>No file chosen</p>}
                     </div>
+
                     <Button variant="contained" fullWidth onClick={register}
                         sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}}}
                     >
                         Register
                     </Button>
-                    <p style={{textAlign: 'center'}}>Already have an account? <Link to="/login">Log in</Link></p>
+                    <p style={{textAlign: 'center', color: '#0c2c1b'}}>Already have an account? <Link to="/login" style={{color: '#0c2c1b'}}>Log in</Link></p>
                 </div>
             </Paper>
         </div>
