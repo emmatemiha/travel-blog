@@ -15,6 +15,10 @@ const Blog = () => {
     const [errorMessage, setErrorMessage] = React.useState("")
     const [similarBlogs, setSimilarBlogs] = React.useState<Array<any>>([])
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false)
+    const [userReaction, setUserReaction] = React.useState<string | null>(null)
+    const [newComment, setNewComment] = React.useState("")
+    const [replyingTo, setReplyingTo] = React.useState<number | null>(null)
+    const [replyText, setReplyText] = React.useState("")
     const authToken = useAuthStore(state => state.authToken)
     const userId = useAuthStore(state => state.userId)
     const navigate = useNavigate()
@@ -63,10 +67,21 @@ const Blog = () => {
                 setErrorFlag(false)
                 setErrorMessage("")
                 setReactions(response.data)
+                getUserReaction(response.data)
             }, (error) => {
                 setErrorFlag(true)
                 setErrorMessage(error.toString())
             })
+    }
+
+    const getUserReaction = (reactionsData: Array<any>) => {
+        if (!userId) return
+        const found = reactionsData.find((r: any) => r.userId === userId)
+        if (found) {
+            setUserReaction(found.reaction)
+        } else {
+            setUserReaction(null)
+        }
     }
 
     const getComments = () => {
@@ -126,14 +141,6 @@ const Blog = () => {
         return reactions.filter((r: any) => r.reaction === reactionType).length
     }
 
-    const reactionEmojis: any = {
-        REACTION_1: '❤️',
-        REACTION_2: '😂',
-        REACTION_3: '😮',
-        REACTION_4: '😢',
-        REACTION_5: '👍'
-    }
-
     const getTopLevelComments = () => {
         return comments.filter((c: any) => c.parentId === null)
     }
@@ -165,6 +172,76 @@ const Blog = () => {
                                 setSimilarBlogs(unique.slice(0, 6))
                             })
                     })
+            })
+    }
+
+    const reactionEmojis: any = {
+        REACTION_1: '❤️',
+        REACTION_2: '😂',
+        REACTION_3: '🤯',
+        REACTION_4: '😭',
+        REACTION_5: '👌'
+    }
+
+    const reactToBlog = (reactionType: string) => {
+        if (!authToken) {
+            navigate('/login')
+            return
+        }
+        if (userReaction === reactionType) {
+            axios.delete('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + id + '/react', {
+                headers: { 'X-Authorization': authToken }
+            })
+                .then(() => {
+                    getReactions()
+                })
+        } else {
+            axios.post('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + id + '/react',
+                { reaction: reactionType },
+                { headers: { 'X-Authorization': authToken }}
+            )
+                .then(() => {
+                    getReactions()
+                })
+        }
+    }
+
+    const postComment = () => {
+        if (!authToken) {
+            navigate('/login')
+            return
+        }
+        if (newComment === "") return
+        axios.post('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + id + '/comments',
+            { comment: newComment },
+            { headers: { 'X-Authorization': authToken }}
+        )
+            .then(() => {
+                setNewComment("")
+                getComments()
+            }, (error) => {
+                setErrorFlag(true)
+                setErrorMessage(error.toString())
+            })
+    }
+
+    const postReply = (parentId: number) => {
+        if (!authToken) {
+            navigate('/login')
+            return
+        }
+        if (replyText === "") return
+        axios.post('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + id + '/comments',
+            { comment: replyText, parentId: parentId },
+            { headers: { 'X-Authorization': authToken }}
+        )
+            .then(() => {
+                setReplyText("")
+                setReplyingTo(null)
+                getComments()
+            }, (error) => {
+                setErrorFlag(true)
+                setErrorMessage(error.toString())
             })
     }
 
@@ -246,22 +323,68 @@ const Blog = () => {
 
                 <div>
                     <h3>Reactions</h3>
+                    {blog.creatorId === userId && (
+                        <p style={{color: '#666', fontSize: '14px'}}>You can't react to your own blog</p>
+                    )}
                     <div style={{display: 'flex', gap: '16px', justifyContent: 'center'}}>
                         {['REACTION_1', 'REACTION_2', 'REACTION_3', 'REACTION_4', 'REACTION_5'].map((r) => (
-                            <span key={r}>
+                            <Button
+                                key={r}
+                                variant={userReaction === r ? 'contained' : 'outlined'}
+                                onClick={() => reactToBlog(r)}
+                                disabled={blog.creatorId === userId}
+                                sx={userReaction === r ?
+                                    {backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}} :
+                                    {color: "#0c2c1b", borderColor: "#0c2c1b"}}>
                                 {reactionEmojis[r]} {getReactionCount(r)}
-                            </span>
+                            </Button>
                         ))}
                     </div>
                 </div>
 
                 <div>
                     <h3>Comments</h3>
+                    {authToken ? (
+                        <div style={{marginBottom: '16px'}}>
+                            <textarea
+                                placeholder="Write a comment..."
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                style={{width: '100%', padding: '12px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc', fontFamily: 'inherit', boxSizing: 'border-box' as any, minHeight: '80px'}}
+                            />
+                            <Button variant="contained" onClick={postComment}
+                                sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}, marginTop: '8px'}}>
+                                Post Comment
+                            </Button>
+                        </div>
+                    ) : (
+                        <p><Link to="/login">Log in</Link> to leave a comment</p>
+                    )}
                     {getTopLevelComments().map((comment: any) => (
                         <div key={comment.commentId} style={{border: '1px solid #ccc', borderRadius: '8px', padding: '12px', marginBottom: '8px'}}>
                             <p><b>{comment.commenterFirstName} {comment.commenterLastName}</b> · {new Date(comment.timestamp).toLocaleDateString('en-NZ')}</p>
                             <p>{comment.comment}</p>
-                            <div style={{marginLeft: '24px'}}>
+                            {authToken && (
+                                <Button size="small" onClick={() => setReplyingTo(replyingTo === comment.commentId ? null : comment.commentId)}
+                                    sx={{color: "#0c2c1b"}}>
+                                    {replyingTo === comment.commentId ? 'Cancel' : 'Reply'}
+                                </Button>
+                            )}
+                            {replyingTo === comment.commentId && (
+                                <div style={{marginTop: '8px'}}>
+                                    <textarea
+                                        placeholder="Write a reply..."
+                                        value={replyText}
+                                        onChange={(e) => setReplyText(e.target.value)}
+                                        style={{width: '100%', padding: '12px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc', fontFamily: 'inherit', boxSizing: 'border-box' as any, minHeight: '60px'}}
+                                    />
+                                    <Button variant="contained" size="small" onClick={() => postReply(comment.commentId)}
+                                        sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}, marginTop: '4px'}}>
+                                        Post Reply
+                                    </Button>
+                                </div>
+                            )}
+                            <div style={{marginLeft: '24px', marginTop: '8px'}}>
                                 {getReplies(comment.commentId).map((reply: any) => (
                                     <div key={reply.commentId} style={{border: '1px solid #eee', borderRadius: '8px', padding: '8px', marginBottom: '4px'}}>
                                         <p><b>{reply.commenterFirstName} {reply.commenterLastName}</b> · {new Date(reply.timestamp).toLocaleDateString('en-NZ')}</p>
