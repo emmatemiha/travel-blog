@@ -21,6 +21,19 @@ const EditBlog = () => {
     const userId = useAuthStore(state => state.userId)
     const navigate = useNavigate()
 
+    const inputStyle = {
+        height: '56px',
+        padding: '0 14px',
+        fontSize: '16px',
+        borderRadius: '6px',
+        border: '1px solid #0c2c1b',
+        fontFamily: "'DM Sans', sans-serif",
+        width: '100%',
+        boxSizing: 'border-box' as any,
+        color: '#0c2c1b',
+        outline: 'none'
+    }
+
     const card = {
         padding: "20px",
         margin: "20px auto",
@@ -114,53 +127,129 @@ const EditBlog = () => {
             })
     }
 
-    const inputStyle = {
-        height: '56px', padding: '0 14px', fontSize: '16px',
-        borderRadius: '4px', border: '1px solid #ccc',
-        fontFamily: 'inherit', width: '100%', boxSizing: 'border-box' as any
-    }
-
     return (
-        <div>
-            <Paper elevation={3} style={card}>
-                <h1 style={{textAlign: 'center'}}>Edit Blog</h1>
+        <div style={{
+            minHeight: 'calc(100vh - 64px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: '#eef2ee',
+            padding: '40px 0'
+        }}>
+            <Paper elevation={0} style={{
+                padding: "32px",
+                width: "400px",
+                border: '1px solid #0c2c1b',
+                borderRadius: '12px'
+            }}>
+                <h1 style={{
+                    textAlign: 'center',
+                    color: '#0c2c1b',
+                    fontFamily: "'DM Sans', sans-serif",
+                    margin: '0 0 24px 0'
+                }}>
+                    Edit Blog
+                </h1>
+
                 {errorFlag &&
                     <Alert severity="error">
                         <AlertTitle>Error</AlertTitle>
                         {errorMessage}
-                    </Alert>}
-                <div style={{display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px'}}>
+                    </Alert>
+                }
+
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '16px',
+                    marginTop: '16px'
+                }}>
+
                     <div>
-                        <label>Title *</label>
+                        <p style={{
+                            margin: '0 0 8px 0',
+                            color: '#0c2c1b',
+                            fontFamily: "'DM Sans', sans-serif"
+                        }}>
+                            Title*
+                        </p>
+
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             style={inputStyle}
+                            className="green-placeholder"
                         />
                     </div>
+
                     <div>
-                        <label>Description *</label>
+                        <p style={{
+                            margin: '0 0 8px 0',
+                            color: '#0c2c1b',
+                            fontFamily: "'DM Sans', sans-serif"
+                        }}>
+                            Description*
+                        </p>
+
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            style={{padding: '14px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box', minHeight: '150px'}}
+                            style={{
+                                padding: '14px',
+                                fontSize: '16px',
+                                borderRadius: '6px',
+                                border: '1px solid #0c2c1b',
+                                fontFamily: "'DM Sans', sans-serif",
+                                width: '100%',
+                                boxSizing: 'border-box',
+                                minHeight: '150px',
+                                color: '#0c2c1b',
+                                outline: 'none',
+                                resize: 'none',
+                            }}
+                            className="green-placeholder"
                         />
                     </div>
+
                     <div>
-                        <label>City *</label>
+                        <p style={{
+                            margin: '0 0 8px 0',
+                            color: '#0c2c1b',
+                            fontFamily: "'DM Sans', sans-serif"
+                        }}>
+                            City*
+                        </p>
+
                         <select
                             value={cityId}
                             onChange={(e) => setCityId(Number(e.target.value))}
-                            style={{...inputStyle, display: 'block'}}>
+                            style={{
+                                ...inputStyle,
+                                display: 'block',
+                                color: '#0c2c1b',
+                                background: 'white',
+                            }}
+                        >
                             <option value="">Select a city</option>
+
                             {cities.map((city: any) => (
-                                <option key={city.cityId} value={city.cityId}>{city.name}</option>
+                                <option key={city.cityId} value={city.cityId}>
+                                    {city.name}
+                                </option>
                             ))}
                         </select>
                     </div>
+
                     <div>
-                        <label>Categories *</label>
+                        <p style={{
+                            margin: '0 0 8px 0',
+                            color: '#0c2c1b',
+                            fontFamily: "'DM Sans', sans-serif"
+                        }}>
+                            Categories*
+                        </p>
+
                         <FormControl style={{width: '100%'}}>
                             <Select
                                 multiple
@@ -171,49 +260,160 @@ const EditBlog = () => {
                                 renderValue={(selected: any) => {
                                     if (selected.length === 0) return "Select categories"
                                     return `${selected.length} selected`
-                                }}>
+                                }}
+                                sx={{
+                                    color: '#0c2c1b',
+
+                                    '& .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#0c2c1b',
+                                    },
+
+                                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#0c2c1b',
+                                    },
+
+                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#0c2c1b',
+                                    },
+
+                                    '& .MuiSvgIcon-root': {
+                                        color: '#0c2c1b',
+                                    },
+
+                                    '& .MuiSelect-select': {
+                                        textAlign: 'left',
+                                        display: 'block',
+                                        color: '#0c2c1b',
+                                    }
+                                }}
+                            >
                                 {categories.map((category: any) => (
-                                    <MenuItem key={category.categoryId} value={category.categoryId}>
-                                        <Checkbox checked={selectedCategoryIds.includes(category.categoryId)}/>
+                                    <MenuItem
+                                        key={category.categoryId}
+                                        value={category.categoryId}
+                                    >
+                                        <Checkbox
+                                            checked={selectedCategoryIds.includes(category.categoryId)}
+                                            sx={{
+                                                color: '#0c2c1b',
+                                                '&.Mui-checked': {
+                                                    color: '#0c2c1b',
+                                                }
+                                            }}
+                                        />
+
                                         <ListItemText primary={category.name}/>
                                     </MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
                     </div>
+
                     {originalSeries !== null ? (
                         <div>
-                            <label>Series (cannot be changed once set)</label>
+                            <p style={{
+                                margin: '0 0 8px 0',
+                                color: '#0c2c1b',
+                                fontFamily: "'DM Sans', sans-serif"
+                            }}>
+                                Series (cannot be changed once set)
+                            </p>
+
                             <input
                                 type="text"
                                 value={originalSeries}
                                 disabled
-                                style={{...inputStyle, background: '#f5f5f5', color: '#999'}}
+                                style={{
+                                    ...inputStyle,
+                                    background: '#f5f5f5',
+                                    color: '#888'
+                                }}
                             />
                         </div>
                     ) : (
                         <div>
-                            <label>Series (optional)</label>
+                            <p style={{
+                                margin: '0 0 8px 0',
+                                color: '#0c2c1b',
+                                fontFamily: "'DM Sans', sans-serif"
+                            }}>
+                                Series (optional)
+                            </p>
+
                             <input
                                 type="text"
                                 placeholder="Series name"
                                 value={series}
                                 onChange={(e) => setSeries(e.target.value)}
                                 style={inputStyle}
+                                className="green-placeholder"
                             />
                         </div>
                     )}
-                    <div>
-                        <label>Cover image (optional — upload to replace existing)</label>
-                        <input
-                            type="file"
-                            accept="image/jpeg, image/png, image/gif"
-                            onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
-                        />
+
+                    <div style={{ textAlign: 'center' }}>
+                        <p style={{
+                            margin: '0 0 8px 0',
+                            color: '#0c2c1b',
+                            fontFamily: "'DM Sans', sans-serif"
+                        }}>
+                            Cover Image (optional)
+                        </p>
+
+                        <label style={{
+                            cursor: 'pointer',
+                            color: '#0c2c1b',
+                            border: '1px solid #0c2c1b',
+                            borderRadius: '6px',
+                            padding: '8px 16px',
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontSize: '14px'
+                        }}>
+                            Choose file
+
+                            <input
+                                type="file"
+                                accept="image/jpeg, image/png, image/gif"
+                                onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
+                                style={{display: 'none'}}
+                            />
+                        </label>
+
+                        {image &&
+                            <p style={{
+                                color: '#0c2c1b',
+                                fontSize: '13px',
+                                marginTop: '4px'
+                            }}>
+                                {image.name}
+                            </p>
+                        }
+
+                        {!image &&
+                            <p style={{
+                                color: '#999',
+                                fontSize: '13px',
+                                marginTop: '4px'
+                            }}>
+                                No file chosen
+                            </p>
+                        }
                     </div>
-                    <Button variant="contained" fullWidth onClick={editBlog}>
+
+                    <Button
+                        variant="contained"
+                        fullWidth
+                        onClick={editBlog}
+                        sx={{
+                            backgroundColor: "#0c2c1b",
+                            "&:hover": {
+                                backgroundColor: "#071a10"
+                            }
+                        }}
+                    >
                         Save Changes
                     </Button>
+
                 </div>
             </Paper>
         </div>

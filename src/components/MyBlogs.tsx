@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React from "react";
-import { Link, useNavigate } from 'react-router-dom';
-import { Paper, Alert, AlertTitle, Button } from "@mui/material";
+import { useNavigate } from 'react-router-dom';
+import { Alert, AlertTitle, Button } from "@mui/material";
 import { useAuthStore } from "../store";
 
 const MyBlogs = () => {
@@ -12,12 +12,6 @@ const MyBlogs = () => {
     const authToken = useAuthStore(state => state.authToken)
     const userId = useAuthStore(state => state.userId)
     const navigate = useNavigate()
-
-    const card = {
-        padding: "20px",
-        margin: "20px auto",
-        maxWidth: "900px"
-    }
 
     React.useEffect(() => {
         if (!authToken) {
@@ -53,36 +47,52 @@ const MyBlogs = () => {
             })
     }
 
-    const getBlogCard = (blog: any, involvement: string) => {
-        return (
-            <div key={blog.blogId} style={{border: '1px solid #ccc', borderRadius: '8px', padding: '12px', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                <div>
-                    <img
-                        src={'https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + blog.blogId + '/image'}
-                        alt="Blog"
-                        style={{width: '80px', height: '60px', objectFit: 'cover', borderRadius: '4px', marginRight: '12px', float: 'left'}}
-                        onError={(e: any) => { e.target.style.display = 'none' }}
-                    />
-                    <p style={{margin: 0}}><b>{blog.title}</b></p>
-                    <p style={{margin: 0}}>{blog.creatorFirstName} {blog.creatorLastName} · {new Date(blog.creationDate).toLocaleDateString('en-NZ')}</p>
-                    <p style={{margin: 0}}>{blog.numReactions} reactions</p>
-                </div>
-                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px'}}>
-                    <span style={{background: '#e8f5e9', color: '#0c2c1b', padding: '4px 8px', borderRadius: '4px', fontSize: '12px'}}>
+    const blogCard = (blog: any, involvement: string) => (
+        <div
+            key={blog.blogId}
+            style={{
+                border: '1px solid #0c2c1b',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                background: 'white',
+                display: 'flex',
+                flexDirection: 'column',
+            }}>
+            <img
+                src={'https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + blog.blogId + '/image'}
+                alt={blog.title}
+                style={{width: '100%', height: '150px', objectFit: 'cover', display: 'block'}}
+                onError={(e: any) => { e.target.style.display = 'none' }}
+            />
+            <div style={{padding: '14px', display: 'flex', flexDirection: 'column', flex: 1}}>
+                <p style={{margin: '0 0 6px', fontWeight: 700, color: '#0c2c1b', fontFamily: "'Cormorant Garamond', serif", fontSize: '20px', lineHeight: 1.2}}>
+                    {blog.title}
+                </p>
+                <p style={{margin: '0 0 4px', fontSize: '13px', color: '#666', fontFamily: "'DM Sans', sans-serif"}}>
+                    By {blog.creatorFirstName} {blog.creatorLastName}
+                </p>
+                <p style={{margin: '0 0 4px', fontSize: '13px', color: '#666', fontFamily: "'DM Sans', sans-serif"}}>
+                    {new Date(blog.creationDate).toLocaleDateString('en-NZ')}
+                </p>
+                <p style={{margin: '0 0 10px', fontSize: '13px', color: '#666', fontFamily: "'DM Sans', sans-serif"}}>
+                    ♡ {blog.numReactions} {blog.numReactions === 1 ? 'reaction' : 'reactions'}
+                </p>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto'}}>
+                    <span style={{background: '#e8f5e9', color: '#0c2c1b', padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontFamily: "'DM Sans', sans-serif"}}>
                         {involvement}
                     </span>
-                    <Button variant="outlined" size="small" component={Link} to={'/blogs/' + blog.blogId}
-                        sx={{color: "#0c2c1b", borderColor: "#0c2c1b"}}>
+                    <Button variant="contained" size="small" onClick={() => navigate('/blogs/' + blog.blogId)}
+                        sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}, fontFamily: "'DM Sans', sans-serif"}}>
                         View
                     </Button>
                 </div>
             </div>
-        )
-    }
+        </div>
+    )
 
     if (errorFlag) {
         return (
-            <div>
+            <div style={{background: '#eef2ee', minHeight: '100vh', padding: '20px'}}>
                 <Alert severity="error">
                     <AlertTitle>Error</AlertTitle>
                     {errorMessage}
@@ -95,25 +105,42 @@ const MyBlogs = () => {
     const interactedOnlyBlogs = interactedBlogs.filter((b: any) => !createdBlogIds.includes(b.blogId))
 
     return (
-        <div>
-            <Paper elevation={3} style={card}>
-                <h1 style={{textAlign: 'center'}}>My Blogs</h1>
+        <div style={{background: '#eef2ee', minHeight: '100vh', padding: '20px'}}>
+            <div style={{maxWidth: '1000px', margin: '0 auto'}}>
                 {createdBlogs.length === 0 && interactedOnlyBlogs.length === 0 && (
-                    <p style={{textAlign: 'center'}}>You haven't created or interacted with any blogs yet!</p>
+                    <div style={{background: 'white', border: '1px solid #0c2c1b', borderRadius: '12px', padding: '40px', textAlign: 'center'}}>
+                        <p style={{color: '#666', fontFamily: "'DM Sans', sans-serif", fontSize: '16px'}}>
+                            You haven't created or interacted with any blogs yet!
+                        </p>
+                        <Button variant="contained" onClick={() => navigate('/blogs/create')}
+                            sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}, marginTop: '12px', fontFamily: "'DM Sans', sans-serif"}}>
+                            Create your first blog
+                        </Button>
+                    </div>
                 )}
+
                 {createdBlogs.length > 0 && (
-                    <div>
-                        <h2>Blogs I Created</h2>
-                        {createdBlogs.map((blog: any) => getBlogCard(blog, 'Created'))}
+                    <div style={{background: 'white', border: '1px solid #0c2c1b', borderRadius: '12px', padding: '24px', marginBottom: '20px'}}>
+                        <h2 style={{fontFamily: "'Cormorant Garamond', serif", color: '#0c2c1b', fontSize: '28px', margin: '0 0 16px'}}>
+                            Blogs I Created
+                        </h2>
+                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px'}}>
+                            {createdBlogs.map((blog: any) => blogCard(blog, 'Created'))}
+                        </div>
                     </div>
                 )}
+
                 {interactedOnlyBlogs.length > 0 && (
-                    <div>
-                        <h2>Blogs I Interacted With</h2>
-                        {interactedOnlyBlogs.map((blog: any) => getBlogCard(blog, 'Reacted/Commented'))}
+                    <div style={{background: 'white', border: '1px solid #0c2c1b', borderRadius: '12px', padding: '24px'}}>
+                        <h2 style={{fontFamily: "'Cormorant Garamond', serif", color: '#0c2c1b', fontSize: '28px', margin: '0 0 16px'}}>
+                            Blogs I Interacted With
+                        </h2>
+                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px'}}>
+                            {interactedOnlyBlogs.map((blog: any) => blogCard(blog, 'Reacted / Commented'))}
+                        </div>
                     </div>
                 )}
-            </Paper>
+            </div>
         </div>
     )
 }

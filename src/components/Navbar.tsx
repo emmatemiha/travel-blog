@@ -3,15 +3,27 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from "../store";
 import axios from 'axios';
 import HomeIcon from "@mui/icons-material/Home";
-import { Button } from "@mui/material";
+import { Button, Menu, MenuItem } from "@mui/material";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AddIcon from '@mui/icons-material/Add';
 
 const Navbar = () => {
     const authToken = useAuthStore(state => state.authToken)
     const userId = useAuthStore(state => state.userId)
     const removeAuth = useAuthStore(state => state.removeAuth)
     const navigate = useNavigate()
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+
+    const handleMenuOpen = (event: React.MouseEvent<any>) => {
+        setAnchorEl(event.currentTarget)
+    }
+
+    const handleMenuClose = () => {
+        setAnchorEl(null)
+    }
 
     const logout = () => {
+        handleMenuClose()
         axios.post('https://seng365.csse.canterbury.ac.nz/api/v1/users/logout', {}, {
             headers: { 'X-Authorization': authToken }
         })
@@ -44,6 +56,7 @@ const Navbar = () => {
                     fontWeight: 700,
                     lineHeight: 1.1,
                     letterSpacing: '0.3px',
+                    whiteSpace: 'nowrap'
                 }}>
                     Adventures in Aotearoa
                 </div>
@@ -64,19 +77,38 @@ const Navbar = () => {
             <div style={{width: '160px', display: 'flex', gap: '20px', alignItems: 'center', justifyContent: 'flex-end' }}>
                 {authToken ? (
                     <>
-                        <Link to={'/profile/' + userId} style={{color: 'white', textDecoration: 'none'}}>Profile</Link>
-                        <Link to="/my-blogs" style={{color: 'white', textDecoration: 'none'}}>My Blogs</Link>
-                        <Link to="/blogs/create" style={{color: 'white', textDecoration: 'none'}}>Create</Link>
-                        <Button variant="contained" onClick={logout} style={{color: "#0c2c1b", borderColor: 'white'}}
-                            sx={{backgroundColor: "white"}}
-                        >
-                            Log out
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            startIcon={<AddIcon/>}
+                            onClick={() => navigate('/blogs/create')}
+                            sx={{color: 'white', borderColor: 'white', '&:hover': {borderColor: 'white', background: 'rgba(255,255,255,0.1)'}, fontFamily: "'DM Sans', sans-serif", textTransform: 'none', whiteSpace: 'nowrap'}}>
+                            Create
                         </Button>
+                        <AccountCircleIcon
+                            onClick={handleMenuOpen}
+                            style={{color: 'white', fontSize: '36px', cursor: 'pointer'}}
+                        />
+
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleMenuClose}>
+                            <MenuItem onClick={() => { handleMenuClose(); navigate('/profile/' + userId) }}>
+                                My Profile
+                            </MenuItem>
+                            <MenuItem onClick={() => { handleMenuClose(); navigate('/my-blogs') }}>
+                                My Blogs
+                            </MenuItem>
+                            <MenuItem onClick={logout} style={{color: 'red'}}>
+                                Log Out
+                            </MenuItem>
+                        </Menu>
                     </>
                 ) : (
                     <>
-                        <Link to="/login" style={{color: 'white', textDecoration: 'none'}}>Log in</Link>
-                        <Link to="/register" style={{color: 'white', textDecoration: 'none'}}>Sign up</Link>
+                        <Link to="/login" style={{color: 'white', textDecoration: 'none', fontFamily: "'DM Sans', sans-serif"}}>Log in</Link>
+                        <Link to="/register" style={{color: 'white', textDecoration: 'none', fontFamily: "'DM Sans', sans-serif"}}>Sign up</Link>
                     </>
                 )}
             </div>
