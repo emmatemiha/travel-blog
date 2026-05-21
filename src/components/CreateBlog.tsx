@@ -33,7 +33,7 @@ const CreateBlog = () => {
 
     const card = {
         padding: "32px",
-        width: "400px",
+        width: "600px",
         border: '1px solid #0c2c1b',
         borderRadius: '12px'
     }
@@ -67,7 +67,7 @@ const CreateBlog = () => {
     }
 
     const createBlog = () => {
-        if (title === "" || description === "" || cityId === "" || selectedCategoryIds.length === 0) {
+        if (title === "" || description === "" || cityId === "" || selectedCategoryIds.length === 0 || !image) {
             setErrorFlag(true)
             setErrorMessage("Please fill in all required fields")
             return
@@ -112,7 +112,7 @@ const CreateBlog = () => {
     return (
         <div style={{minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eef2ee', padding: '40px 0'}}>
             <Paper elevation={0} style={card}>
-                <h1 style={{textAlign: 'center', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif", margin: '0 0 24px 0'}}>Create Blog</h1>
+                <h1 style={{textAlign: 'center', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif", margin: '0 0 24px 0', fontSize: '28px'}}>Create Blog</h1>
                 {errorFlag &&
                     <Alert severity="error">
                         <AlertTitle>Error</AlertTitle>
@@ -202,9 +202,12 @@ const CreateBlog = () => {
                                         color: '#0c2c1b',
                                     }
                                 }}
-                                >
+                            >
                                 {categories.map((category: any) => (
-                                    <MenuItem key={category.categoryId} value={category.categoryId}>
+                                    <MenuItem
+                                        key={category.categoryId}
+                                        value={category.categoryId}
+                                    >
                                         <Checkbox
                                             checked={selectedCategoryIds.includes(category.categoryId)}
                                             sx={{
@@ -232,7 +235,7 @@ const CreateBlog = () => {
                         />
                     </div>
                     <div style={{ textAlign: 'center' }}>
-                        <p style={{margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif"}}>Cover Image (optional)</p>
+                        <p style={{margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif"}}>Image*</p>
                         <label style={{cursor: 'pointer', color: '#0c2c1b', border: '1px solid #0c2c1b', borderRadius: '6px', padding: '8px 16px', fontFamily: "'DM Sans', sans-serif", fontSize: '14px'}}>
                             Choose file
                             <input
@@ -243,7 +246,7 @@ const CreateBlog = () => {
                             />
                         </label>
                         {image && <p style={{color: '#0c2c1b', fontSize: '13px', marginTop: '4px'}}>{image.name}</p>}
-                        {!image && <p style={{color: '#999', fontSize: '13px', marginTop: '4px'}}>No file chosen</p>}
+                        {!image && <p style={{color: '#6e6e6e', fontSize: '13px', marginTop: '4px'}}>No file chosen</p>}
                     </div>
                     <Button variant="contained" fullWidth onClick={createBlog}
                         sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}}}

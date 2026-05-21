@@ -3,12 +3,15 @@ import React from "react";
 import { useNavigate } from 'react-router-dom';
 import { Alert, AlertTitle, Button } from "@mui/material";
 import { useAuthStore } from "../store";
+import defaultPfp from '../assets/default_pfp.png'
 
 const MyBlogs = () => {
     const [createdBlogs, setCreatedBlogs] = React.useState<Array<any>>([])
     const [interactedBlogs, setInteractedBlogs] = React.useState<Array<any>>([])
     const [errorFlag, setErrorFlag] = React.useState(false)
     const [errorMessage, setErrorMessage] = React.useState("")
+    const [cities, setCities] = React.useState<Array<any>>([])
+    const [categories, setCategories] = React.useState<Array<any>>([])
     const authToken = useAuthStore(state => state.authToken)
     const userId = useAuthStore(state => state.userId)
     const navigate = useNavigate()
@@ -18,9 +21,35 @@ const MyBlogs = () => {
             navigate('/login')
             return
         }
+        getCities()
+        getCategories()
         getCreatedBlogs()
         getInteractedBlogs()
     }, [])
+
+    const getCities = () => {
+        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/cities')
+            .then((response) => { setCities(response.data) },
+            (error) => { setErrorFlag(true); setErrorMessage(error.toString()) })
+    }
+
+    const getCategories = () => {
+        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/categories')
+            .then((response) => { setCategories(response.data) },
+            (error) => { setErrorFlag(true); setErrorMessage(error.toString()) })
+    }
+
+    const getCityName = (cityId: number) => {
+        const city = cities.find((c: any) => c.cityId === cityId)
+        return city ? city.name : cityId
+    }
+
+    const getCategoryNames = (categoryIds: number[]) => {
+        return categoryIds.map((id: number) => {
+            const cat = categories.find((c: any) => c.categoryId === id)
+            return cat ? cat.name : id
+        }).join(', ')
+    }
 
     const getCreatedBlogs = () => {
         axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs', {
@@ -50,14 +79,7 @@ const MyBlogs = () => {
     const blogCard = (blog: any, involvement: string) => (
         <div
             key={blog.blogId}
-            style={{
-                border: '1px solid #0c2c1b',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                background: 'white',
-                display: 'flex',
-                flexDirection: 'column',
-            }}>
+            style={{border: '1px solid #0c2c1b', borderRadius: '12px', overflow: 'hidden', background: 'white', display: 'flex', flexDirection: 'column'}}>
             <img
                 src={'https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + blog.blogId + '/image'}
                 alt={blog.title}
@@ -65,16 +87,30 @@ const MyBlogs = () => {
                 onError={(e: any) => { e.target.style.display = 'none' }}
             />
             <div style={{padding: '14px', display: 'flex', flexDirection: 'column', flex: 1}}>
-                <p style={{margin: '0 0 6px', fontWeight: 700, color: '#0c2c1b', fontFamily: "'Cormorant Garamond', serif", fontSize: '20px', lineHeight: 1.2}}>
+                <p style={{margin: '0 0 6px', fontWeight: 700, color: '#0c2c1b', fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', lineHeight: 1.1, wordBreak: 'break-word', textDecoration: 'underline'}}>
                     {blog.title}
                 </p>
-                <p style={{margin: '0 0 4px', fontSize: '13px', color: '#666', fontFamily: "'DM Sans', sans-serif"}}>
-                    By {blog.creatorFirstName} {blog.creatorLastName}
-                </p>
-                <p style={{margin: '0 0 4px', fontSize: '13px', color: '#666', fontFamily: "'DM Sans', sans-serif"}}>
+                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', margin: '0 0 4px'}}>
+                    <img
+                        src={'https://seng365.csse.canterbury.ac.nz/api/v1/users/' + blog.creatorId + '/image'}
+                        alt="Creator"
+                        style={{width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b'}}
+                        onError={(e: any) => { e.target.src = defaultPfp }}
+                    />
+                    <p style={{margin: 0, fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif", wordBreak: 'break-word'}}>
+                        By {blog.creatorFirstName} {blog.creatorLastName}
+                    </p>
+                </div>
+                <p style={{margin: '0 0 4px', fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif"}}>
                     {new Date(blog.creationDate).toLocaleDateString('en-NZ')}
                 </p>
-                <p style={{margin: '0 0 10px', fontSize: '13px', color: '#666', fontFamily: "'DM Sans', sans-serif"}}>
+                <p style={{margin: '0 0 4px', fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif"}}>
+                    📍 {getCityName(blog.cityId)}
+                </p>
+                <p style={{margin: '0 0 4px', fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif"}}>
+                    {getCategoryNames(blog.categoryIds)}
+                </p>
+                <p style={{margin: '0 0 10px', fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif"}}>
                     ♡ {blog.numReactions} {blog.numReactions === 1 ? 'reaction' : 'reactions'}
                 </p>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto'}}>
@@ -109,7 +145,7 @@ const MyBlogs = () => {
             <div style={{maxWidth: '1000px', margin: '0 auto'}}>
                 {createdBlogs.length === 0 && interactedOnlyBlogs.length === 0 && (
                     <div style={{background: 'white', border: '1px solid #0c2c1b', borderRadius: '12px', padding: '40px', textAlign: 'center'}}>
-                        <p style={{color: '#666', fontFamily: "'DM Sans', sans-serif", fontSize: '16px'}}>
+                        <p style={{color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif", fontSize: '16px'}}>
                             You haven't created or interacted with any blogs yet!
                         </p>
                         <Button variant="contained" onClick={() => navigate('/blogs/create')}
@@ -121,7 +157,7 @@ const MyBlogs = () => {
 
                 {createdBlogs.length > 0 && (
                     <div style={{background: 'white', border: '1px solid #0c2c1b', borderRadius: '12px', padding: '24px', marginBottom: '20px'}}>
-                        <h2 style={{fontFamily: "'Cormorant Garamond', serif", color: '#0c2c1b', fontSize: '28px', margin: '0 0 16px'}}>
+                        <h2 style={{fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', fontSize: '22px', margin: '0 0 16px'}}>
                             Blogs I Created
                         </h2>
                         <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px'}}>
@@ -132,7 +168,7 @@ const MyBlogs = () => {
 
                 {interactedOnlyBlogs.length > 0 && (
                     <div style={{background: 'white', border: '1px solid #0c2c1b', borderRadius: '12px', padding: '24px'}}>
-                        <h2 style={{fontFamily: "'Cormorant Garamond', serif", color: '#0c2c1b', fontSize: '28px', margin: '0 0 16px'}}>
+                        <h2 style={{fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', fontSize: '22px', margin: '0 0 16px'}}>
                             Blogs I Interacted With
                         </h2>
                         <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px'}}>

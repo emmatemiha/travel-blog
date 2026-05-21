@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React from "react";
 import { Link } from 'react-router-dom';
-import { Paper, Alert, AlertTitle, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Button, Pagination } from "@mui/material";
+import { Alert, AlertTitle, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Button, Pagination } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 
 const Blogs = () => {
@@ -18,11 +18,6 @@ const Blogs = () => {
     const pageSize = 9
     const [count, setCount] = React.useState(0) // to keep track of pagination
     const [numReactions, setNumReactions] = React.useState("")
-
-    const card = { // so the page doesn't look as cramped
-        padding: "10px",
-        margin: "20px",
-    }
 
     const handleNumReactionsChange = (e: any) => {
         setNumReactions(e.target.value)
@@ -132,15 +127,23 @@ const Blogs = () => {
                 <div style={{ padding: '16px', textAlign: 'center' }}>
                     <div style={{
                         fontFamily: "'Cormorant Garamond', serif",
-                        fontSize: '22px',
+                        fontSize: '28px',
                         color: '#0c2c1b',
                         fontWeight: 700,
                         textDecoration: 'underline',
-                        marginBottom: '8px',
+                        marginBottom: '12px',
+                        wordBreak: 'break-word',
+                        lineHeight: '1.1'
                     }}>
                         {row.title}
                     </div>
-                    <div style={{ fontSize: '14px', color: '#0c2c1b', marginBottom: '4px' }}>
+                    <div style={{fontSize: '14px', color: '#0c2c1b', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', wordBreak: 'break-word'}}>
+                        <img
+                            src={'https://seng365.csse.canterbury.ac.nz/api/v1/users/' + row.creatorId + '/image'}
+                            alt="Creator"
+                            style={{width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b'}}
+                            onError={(e: any) => { e.target.src = '/src/assets/default_pfp.png' }}
+                        />
                         By {row.creatorFirstName} {row.creatorLastName}
                     </div>
                     <div style={{ fontSize: '14px', color: '#0c2c1b' }}>
@@ -221,8 +224,8 @@ const Blogs = () => {
                     >
                         <option value="ALPHABETICAL_ASC">Title A-Z</option>
                         <option value="ALPHABETICAL_DESC">Title Z-A</option>
-                        <option value="REACTIONS_ASC">Least reactions</option>
-                        <option value="REACTIONS_DESC">Most reactions</option>
+                        <option value="REACTIONS_ASC">Reactions ascending</option>
+                        <option value="REACTIONS_DESC">Reactions descending</option>
                         <option value="CREATED_DESC">Newest first</option>
                         <option value="CREATED_ASC">Oldest first</option>
                     </select>

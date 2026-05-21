@@ -94,13 +94,16 @@ const Navbar = () => {
                             anchorEl={anchorEl}
                             open={Boolean(anchorEl)}
                             onClose={handleMenuClose}>
-                            <MenuItem onClick={() => { handleMenuClose(); navigate('/profile/' + userId) }}>
+                            <MenuItem onClick={() => { handleMenuClose(); navigate('/profile/' + userId) }}
+                                sx={{fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b'}}>
                                 My Profile
                             </MenuItem>
-                            <MenuItem onClick={() => { handleMenuClose(); navigate('/my-blogs') }}>
+                            <MenuItem onClick={() => { handleMenuClose(); navigate('/my-blogs') }}
+                                sx={{fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b'}}>
                                 My Blogs
                             </MenuItem>
-                            <MenuItem onClick={logout} style={{color: 'red'}}>
+                            <MenuItem onClick={logout} style={{color: 'red'}}
+                                sx={{fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b'}}>
                                 Log Out
                             </MenuItem>
                         </Menu>

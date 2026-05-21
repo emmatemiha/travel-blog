@@ -1,8 +1,9 @@
 import axios from 'axios';
 import React from "react";
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Paper, Alert, AlertTitle, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
+import { Alert, AlertTitle, Button, Dialog, DialogContent, DialogContentText, DialogActions, Snackbar } from "@mui/material";
 import { useAuthStore } from "../store";
+import defaultPfp from '../assets/default_pfp.png'
 
 const Blog = () => {
     const {id} = useParams()
@@ -19,6 +20,8 @@ const Blog = () => {
     const [newComment, setNewComment] = React.useState("")
     const [replyingTo, setReplyingTo] = React.useState<number | null>(null)
     const [replyText, setReplyText] = React.useState("")
+    const [snackOpen, setSnackOpen] = React.useState(false)
+    const [snackMessage, setSnackMessage] = React.useState("")
     const authToken = useAuthStore(state => state.authToken)
     const userId = useAuthStore(state => state.userId)
     const navigate = useNavigate()
@@ -49,15 +52,13 @@ const Blog = () => {
             headers: { 'X-Authorization': authToken }
         })
             .then((response) => {
-                navigate('/blogs')
+                setSnackMessage("Blog deleted successfully")
+                setSnackOpen(true)
+                setTimeout(() => navigate('/blogs'), 500)
             }, (error) => {
                 setOpenDeleteDialog(false)
                 setErrorFlag(true)
-                if (error.response && error.response.status === 403) {
-                    setErrorMessage("Cannot delete a blog that has comments")
-                } else {
-                    setErrorMessage(error.toString())
-                }
+                setErrorMessage(error.toString())
             })
     }
 
@@ -146,7 +147,9 @@ const Blog = () => {
     }
 
     const getReplies = (commentId: number) => {
-        return comments.filter((c: any) => c.parentId === commentId)
+        return comments
+            .filter((c: any) => c.parentId === commentId)
+            .sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
     }
 
     const getSimilarBlogs = (blogData: any) => {
@@ -164,9 +167,10 @@ const Blog = () => {
                         axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs', { params: {...params, creatorId: blogData.creatorId} })
                             .then((response) => {
                                 const creatorBlogs = response.data.blogs
+                                const currentBlogId = Number(id)
                                 const allSimilar = [...cityBlogs, ...categoryBlogs, ...creatorBlogs]
                                 const unique = allSimilar.filter((b: any, index: number, self: any[]) =>
-                                    b.blogId !== Number(id) &&
+                                    b.blogId !== currentBlogId &&
                                     self.findIndex((x: any) => x.blogId === b.blogId) === index
                                 )
                                 setSimilarBlogs(unique.slice(0, 6))
@@ -253,6 +257,10 @@ const Blog = () => {
         setOpenDeleteDialog(false)
     }
 
+    const handleSnackClose = () => {
+        setSnackOpen(false)
+    }
+
     if (errorFlag) {
         return (
             <div>
@@ -276,11 +284,11 @@ const Blog = () => {
                 <div style={{background: 'white', border: '1px solid #0c2c1b', borderRadius: '12px', overflow: 'hidden', marginBottom: '20px'}}>
 
                     <div style={{padding: '24px'}}>
-                        <div style={{fontSize: '14px', color: '#666', fontFamily: "'DM Sans', sans-serif", marginBottom: '8px'}}>
+                        <div style={{fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif", marginBottom: '8px'}}>
                             📍 {getCityName(blog.cityId)} &nbsp;·&nbsp; {new Date(blog.creationDate).toLocaleDateString('en-NZ')}
                         </div>
 
-                        <h1 style={{fontFamily: "'Cormorant Garamond', serif", color: '#0c2c1b', fontSize: '36px', margin: '0 0 12px', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '6px', marginBottom: '30px'}}>
+                        <h1 style={{fontFamily: "'Cormorant Garamond', serif", color: '#0c2c1b', fontSize: '36px', margin: '0 0 12px', fontWeight: 700, textDecoration: 'underline', marginBottom: '20px', wordBreak: 'break-word', lineHeight: '1.1'}}>
                             {blog.title}
                         </h1>
 
@@ -291,14 +299,14 @@ const Blog = () => {
                                 src={'https://seng365.csse.canterbury.ac.nz/api/v1/users/' + blog.creatorId + '/image'}
                                 alt="Creator"
                                 style={{width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b'}}
-                                onError={(e: any) => { e.target.src = 'https://via.placeholder.com/36?text=?' }}
+                                onError={(e: any) => { e.target.src = defaultPfp  }}
                             />
-                            <span style={{fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', fontSize: '15px'}}>
+                            <span style={{fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', fontSize: '15px', wordBreak: 'break-word'}}>
                                 By {blog.creatorFirstName} {blog.creatorLastName}
                             </span>
                         </div>
 
-                        <p style={{fontFamily: "'DM Sans', sans-serif", fontSize: '16px', lineHeight: '1.8', color: '#0c2c1b', marginBottom: '20px'}}>
+                        <p style={{fontFamily: "'DM Sans', sans-serif", fontSize: '16px', lineHeight: '1.8', color: '#0c2c1b', marginBottom: '20px', wordBreak: 'break-word'}}>
                             {blog.description}
                         </p>
 
@@ -306,20 +314,20 @@ const Blog = () => {
                             key={blog.blogId}
                             src={'https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + id + '/image'}
                             alt="Blog cover"
-                            style={{width: '100%', maxHeight: '400px', objectFit: 'cover', display: 'block', marginBottom: '28px'}}
+                            style={{width: '100%', maxHeight: '900px', objectFit: 'cover', display: 'block', marginBottom: '28px'}}
                             onError={(e: any) => { e.target.style.display = 'none' }}
                         />
 
-                        <div style={{fontSize: '14px', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif", display: 'flex', flexDirection: 'column', gap: '6px'}}>
+                        <div style={{fontSize: '15px', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif", display: 'flex', flexDirection: 'column', gap: '6px'}}>
                             {blog.series && <span><b>Series:</b> {blog.series}</span>}
                             <span><b>Categories:</b> {blog.categoryIds ? getCategoryNames(blog.categoryIds) : ''}</span>
                             <span><b>Unique commenters:</b> {blog.numberOfUniqueCommenters}</span>
                         </div>
 
                         {userId === blog.creatorId && (
-                            <div style={{display: 'flex', gap: '12px', marginTop: '20px'}}>
-                                <Button variant="outlined" onClick={() => navigate('/blogs/' + id + '/edit')}
-                                    sx={{color: "#0c2c1b", borderColor: "#0c2c1b", fontFamily: "'DM Sans', sans-serif"}}>
+                            <div style={{display: 'flex', gap: '12px', marginTop: '20px', justifyContent: 'center', alignItems: 'center'}}>
+                                <Button variant="contained" onClick={() => navigate('/blogs/' + id + '/edit')}
+                                    sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}, fontFamily: "'DM Sans', sans-serif"}}>
                                     Edit Blog
                                 </Button>
                                 <Button variant="outlined" color="error" onClick={handleDeleteDialogOpen}
@@ -336,7 +344,7 @@ const Blog = () => {
                     
                     <h2 style={{fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', margin: '0 0 12px'}}>Reactions</h2>
                     {blog.creatorId === userId && (
-                        <p style={{color: '#666', fontSize: '14px', fontFamily: "'DM Sans', sans-serif"}}>You can't react to your own blog</p>
+                        <p style={{color: '#6e6e6e', fontSize: '14px', fontFamily: "'DM Sans', sans-serif"}}>You can't react to your own blog</p>
                     )}
                     {!authToken && (
                         <p style={{fontSize: '14px', fontFamily: "'DM Sans', sans-serif"}}>
@@ -361,15 +369,15 @@ const Blog = () => {
                     <h2 style={{fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', margin: '0 0 16px'}}>Comments</h2>
 
                     {authToken ? (
-                        <div style={{marginBottom: '20px'}}>
+                        <div style={{marginBottom: '4px'}}>
                             <textarea
                                 placeholder="Write a comment..."
                                 value={newComment}
                                 onChange={(e) => setNewComment(e.target.value)}
-                                style={{width: '100%', padding: '12px', fontSize: '15px', borderRadius: '8px', border: '1px solid #0c2c1b', fontFamily: "'DM Sans', sans-serif", boxSizing: 'border-box' as any, minHeight: '80px', resize: 'vertical'}}
+                                style={{width: '100%', padding: '12px', fontSize: '15px', borderRadius: '8px', border: '1px solid #0c2c1b', fontFamily: "'DM Sans', sans-serif", boxSizing: 'border-box' as any, minHeight: '80px', resize: 'none'}}
                             />
                             <Button variant="contained" onClick={postComment}
-                                sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}, marginTop: '8px', fontFamily: "'DM Sans', sans-serif"}}>
+                                sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}, marginTop: '12px', fontFamily: "'DM Sans', sans-serif", marginBottom: '16px'}}>
                                 Post Comment
                             </Button>
                         </div>
@@ -377,10 +385,6 @@ const Blog = () => {
                         <p style={{fontFamily: "'DM Sans', sans-serif", fontSize: '14px', marginBottom: '16px'}}>
                             <Link to="/login" style={{color: '#0c2c1b'}}>Log in</Link> to leave a comment
                         </p>
-                    )}
-
-                    {getTopLevelComments().length === 0 && (
-                        <p style={{color: '#999', fontFamily: "'DM Sans', sans-serif", fontSize: '14px'}}>No comments yet — be the first!</p>
                     )}
 
                     {getTopLevelComments().map((comment: any) => (
@@ -391,25 +395,28 @@ const Blog = () => {
                                 <img
                                     src={'https://seng365.csse.canterbury.ac.nz/api/v1/users/' + comment.commenterId + '/image'}
                                     alt="Commenter"
-                                    style={{width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #ddd'}}
-                                    onError={(e: any) => { e.target.src = 'https://via.placeholder.com/32?text=?' }}
+                                    style={{width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b'}}
+                                    onError={(e: any) => { e.target.src = defaultPfp }}
                                 />
                                 <div>
-                                    <span style={{fontWeight: 600, fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: '#0c2c1b'}}>
+                                    <span style={{fontWeight: 600, fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: '#0c2c1b', wordBreak: 'break-word'}}>
                                         {comment.commenterFirstName} {comment.commenterLastName}
                                     </span>
-                                    <span style={{color: '#999', fontSize: '12px', marginLeft: '8px', fontFamily: "'DM Sans', sans-serif"}}>
-                                        {new Date(comment.timestamp).toLocaleDateString('en-NZ')}
+                                    <span style={{color: '#6e6e6e', fontSize: '12px', marginLeft: '8px', fontFamily: "'DM Sans', sans-serif", wordBreak: 'break-word'}}>
+                                        {new Date(comment.timestamp).toLocaleString('en-NZ')}
                                     </span>
                                 </div>
                             </div>
-                            <p style={{color: '#0c2c1b', margin: '0 0 8px', fontFamily: "'DM Sans', sans-serif", fontSize: '15px', paddingLeft: '42px'}}>
+                            <p style={{color: '#0c2c1b', margin: '0 0 8px', fontFamily: "'DM Sans', sans-serif", fontSize: '15px', paddingLeft: '42px', wordBreak: 'break-word'}}>
                                 {comment.comment}
+                            </p>
+                            <p style={{color: '#6e6e6e', fontSize: '13px', fontFamily: "'DM Sans', sans-serif", paddingLeft: '42px', margin: '0 0 4px'}}>
+                                {getReplies(comment.commentId).length} {getReplies(comment.commentId).length === 1 ? 'reply' : 'replies'}
                             </p>
                             {authToken && (
                                 <Button size="small" onClick={() => setReplyingTo(replyingTo === comment.commentId ? null : comment.commentId)}
                                     sx={{color: "#0c2c1b", fontFamily: "'DM Sans', sans-serif", fontSize: '12px', paddingLeft: '42px'}}>
-                                    {replyingTo === comment.commentId ? 'Cancel' : '↩ Reply'}
+                                    {replyingTo === comment.commentId ? 'Cancel' : 'Reply'}
                                 </Button>
                             )}
                             {replyingTo === comment.commentId && (
@@ -418,7 +425,7 @@ const Blog = () => {
                                         placeholder="Write a reply..."
                                         value={replyText}
                                         onChange={(e) => setReplyText(e.target.value)}
-                                        style={{width: '100%', padding: '10px', fontSize: '14px', borderRadius: '8px', border: '1px solid #0c2c1b', fontFamily: "'DM Sans', sans-serif", boxSizing: 'border-box' as any, minHeight: '60px', resize: 'vertical'}}
+                                        style={{width: '100%', padding: '10px', fontSize: '14px', borderRadius: '8px', border: '1px solid #0c2c1b', fontFamily: "'DM Sans', sans-serif", boxSizing: 'border-box' as any, minHeight: '60px', resize: 'none'}}
                                     />
                                     <Button variant="contained" size="small" onClick={() => postReply(comment.commentId)}
                                         sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}, marginTop: '4px', fontFamily: "'DM Sans', sans-serif"}}>
@@ -430,21 +437,23 @@ const Blog = () => {
                                 <div style={{marginLeft: '42px', marginTop: '12px', borderLeft: '2px solid #eee', paddingLeft: '16px'}}>
                                     {getReplies(comment.commentId).map((reply: any) => (
                                         <div key={reply.commentId} style={{marginBottom: '12px'}}>
-                                            <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
+                                            <div 
+                                                onClick={() => navigate('/profile/' + reply.commenterId)}
+                                                style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', cursor: 'pointer'}}>
                                                 <img
                                                     src={'https://seng365.csse.canterbury.ac.nz/api/v1/users/' + reply.commenterId + '/image'}
                                                     alt="Replier"
-                                                    style={{width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #ddd'}}
-                                                    onError={(e: any) => { e.target.src = 'https://via.placeholder.com/24?text=?' }}
+                                                    style={{width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b'}}
+                                                    onError={(e: any) => { e.target.src = defaultPfp }}
                                                 />
-                                                <span style={{fontWeight: 600, fontFamily: "'DM Sans', sans-serif", fontSize: '13px', color: '#0c2c1b'}}>
+                                                <span style={{fontWeight: 600, fontFamily: "'DM Sans', sans-serif", fontSize: '13px', color: '#0c2c1b', wordBreak: 'break-word'}}>
                                                     {reply.commenterFirstName} {reply.commenterLastName}
                                                 </span>
-                                                <span style={{color: '#999', fontSize: '12px', fontFamily: "'DM Sans', sans-serif"}}>
-                                                    {new Date(reply.timestamp).toLocaleDateString('en-NZ')}
+                                                <span style={{color: '#6e6e6e', fontSize: '12px', fontFamily: "'DM Sans', sans-serif"}}>
+                                                    {new Date(reply.timestamp).toLocaleString('en-NZ')}
                                                 </span>
                                             </div>
-                                            <p style={{margin: 0, fontFamily: "'DM Sans', sans-serif", fontSize: '14px', paddingLeft: '32px', color: '#0c2c1b'}}>
+                                            <p style={{margin: 0, fontFamily: "'DM Sans', sans-serif", fontSize: '14px', paddingLeft: '32px', color: '#0c2c1b', wordBreak: 'break-word'}}>
                                                 {reply.comment}
                                             </p>
                                         </div>
@@ -472,9 +481,30 @@ const Blog = () => {
                                     />
                                     
                                     <div style={{padding: '12px'}}>
-                                        <p style={{margin: '0 0 4px', fontWeight: 700, fontFamily: "'Cormorant Garamond', serif", fontSize: '16px', color: '#0c2c1b'}}>{b.title}</p>
-                                        <p style={{margin: '0 0 4px', fontSize: '13px', fontFamily: "'DM Sans', sans-serif", color: '#555'}}>{b.creatorFirstName} {b.creatorLastName}</p>
-                                        <p style={{margin: '0 0 8px', fontSize: '13px', fontFamily: "'DM Sans', sans-serif", color: '#555'}}>♡ {b.numReactions} {b.numReactions === 1 ? 'reaction' : 'reactions'}</p>
+                                        <p style={{margin: '0 0 8px', fontWeight: 700, fontFamily: "'Cormorant Garamond', serif", fontSize: '20px', color: '#0c2c1b', wordBreak: 'break-word', textDecoration: 'underline', lineHeight: '1.1'}}>{b.title}</p>
+
+                                        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', margin: '0 0 4px'}}>
+                                            <img
+                                                src={'https://seng365.csse.canterbury.ac.nz/api/v1/users/' + b.creatorId + '/image'}
+                                                alt="Creator"
+                                                style={{width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b'}}
+                                                onError={(e: any) => { e.target.src = defaultPfp }}
+                                            />
+                                            <p style={{margin: 0, fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif", wordBreak: 'break-word'}}>
+                                                By {b.creatorFirstName} {b.creatorLastName}
+                                            </p>
+                                        </div>
+
+                                        <p style={{margin: '0 0 4px', fontSize: '13px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif"}}>
+                                            {new Date(b.creationDate).toLocaleDateString('en-NZ')}
+                                        </p>
+                                        <p style={{margin: '0 0 4px', fontSize: '13px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif"}}>
+                                            📍 {getCityName(b.cityId)}
+                                        </p>
+                                        <p style={{margin: '0 0 2px', fontSize: '13px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif"}}>
+                                            {getCategoryNames(b.categoryIds)}
+                                        </p>
+                                        <p style={{margin: '0 0 8px', fontSize: '14px', fontFamily: "'DM Sans', sans-serif", color: '#6e6e6e'}}>♡ {b.numReactions} {b.numReactions === 1 ? 'reaction' : 'reactions'}</p>
                                         <Button variant="contained" size="small" component={Link} to={"/blogs/" + b.blogId}
                                             sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}, fontFamily: "'DM Sans', sans-serif"}}>
                                             View
@@ -488,15 +518,41 @@ const Blog = () => {
             </div>
 
             <Dialog open={openDeleteDialog} onClose={handleDeleteDialogClose}>
-                <DialogTitle>Delete Blog?</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>Are you sure you want to delete this blog? This cannot be undone.</DialogContentText>
+                    <DialogContentText sx={{fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b'}}>
+                        {blog.numberOfUniqueCommenters > 0
+                            ? "This blog can't be deleted because it has comments."
+                            : "Are you sure you want to delete this blog?"
+                        }
+                    </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleDeleteDialogClose} sx={{color: "#0c2c1b"}}>Cancel</Button>
-                    <Button variant="outlined" color="error" onClick={deleteBlog}>Delete</Button>
+                    <Button
+                        onClick={handleDeleteDialogClose}
+                        sx={{color: "#0c2c1b", fontFamily: "'DM Sans', sans-serif"}}>
+                        {blog.numberOfUniqueCommenters > 0 ? "Close" : "Cancel"}
+                    </Button>
+                    {blog.numberOfUniqueCommenters === 0 && (
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={deleteBlog}
+                            sx={{fontFamily: "'DM Sans', sans-serif"}}>
+                            Delete
+                        </Button>
+                    )}
                 </DialogActions>
             </Dialog>
+
+            <Snackbar
+                autoHideDuration={3000}
+                open={snackOpen}
+                onClose={handleSnackClose}
+                key={snackMessage}>
+                <Alert onClose={handleSnackClose} severity="success" sx={{width: '100%'}}>
+                    {snackMessage}
+                </Alert>
+            </Snackbar>
         </div>
     )
      

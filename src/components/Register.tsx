@@ -38,7 +38,8 @@ const Register = () => {
     }
 
     const validateEmail = (email: string) => {
-        return email.includes('@') && email.includes('.')
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+        return emailRegex.test(email)
     }
 
     const register = () => {
@@ -153,7 +154,8 @@ const Register = () => {
                             />
                         </label>
                         {profilePic && <p style={{color: '#0c2c1b', fontSize: '13px', marginTop: '4px'}}>{profilePic.name}</p>}
-                        {!profilePic && <p style={{color: '#999', fontSize: '13px', marginTop: '4px'}}>No file chosen</p>}
+                        {!profilePic && <p style={{color: '#6e6e6e', fontSize: '13px', marginTop: '10px'}}>No file chosen</p>}
+                        <p style={{color: '#6e6e6e', fontSize: '12px', margin: '0px 0 0', fontFamily: "'DM Sans', sans-serif"}}>Accepted formats: JPEG, PNG, GIF</p>
                     </div>
 
                     <Button variant="contained" fullWidth onClick={register}

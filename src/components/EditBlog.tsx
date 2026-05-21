@@ -34,12 +34,6 @@ const EditBlog = () => {
         outline: 'none'
     }
 
-    const card = {
-        padding: "20px",
-        margin: "20px auto",
-        maxWidth: "600px"
-    }
-
     React.useEffect(() => {
         if (!authToken) {
             navigate('/login')
@@ -138,7 +132,7 @@ const EditBlog = () => {
         }}>
             <Paper elevation={0} style={{
                 padding: "32px",
-                width: "400px",
+                width: "600px",
                 border: '1px solid #0c2c1b',
                 borderRadius: '12px'
             }}>
@@ -146,7 +140,8 @@ const EditBlog = () => {
                     textAlign: 'center',
                     color: '#0c2c1b',
                     fontFamily: "'DM Sans', sans-serif",
-                    margin: '0 0 24px 0'
+                    margin: '0 0 24px 0',
+                    fontSize: '28px'
                 }}>
                     Edit Blog
                 </h1>
@@ -357,7 +352,7 @@ const EditBlog = () => {
                             color: '#0c2c1b',
                             fontFamily: "'DM Sans', sans-serif"
                         }}>
-                            Cover Image (optional)
+                            Image*
                         </p>
 
                         <label style={{
@@ -391,7 +386,7 @@ const EditBlog = () => {
 
                         {!image &&
                             <p style={{
-                                color: '#999',
+                                color: '#6e6e6e',
                                 fontSize: '13px',
                                 marginTop: '4px'
                             }}>
@@ -400,19 +395,23 @@ const EditBlog = () => {
                         }
                     </div>
 
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={editBlog}
-                        sx={{
-                            backgroundColor: "#0c2c1b",
-                            "&:hover": {
-                                backgroundColor: "#071a10"
-                            }
-                        }}
-                    >
-                        Save Changes
-                    </Button>
+                    <div style={{display: 'flex', gap: '12px', marginTop: '8px'}}>
+                        <Button
+                            variant="outlined"
+                            onClick={() => navigate('/blogs/' + id)}
+                            sx={{ color: "#0c2c1b", borderColor: "#0c2c1b", flex: 1 }}
+                        >
+                            Cancel
+                        </Button>
+
+                        <Button
+                            variant="contained"
+                            onClick={editBlog}
+                            sx={{ backgroundColor: "#0c2c1b", "&:hover": { backgroundColor: "#071a10" }, flex: 1 }}
+                        >
+                            Save Changes
+                        </Button>
+                    </div>
 
                 </div>
             </Paper>
