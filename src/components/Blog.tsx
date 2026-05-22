@@ -34,6 +34,10 @@ const Blog = () => {
         getCategories()
     }, [id])
 
+    React.useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [id])
+
     const getBlog = () => {
         axios.get('http://localhost:4941/api/v1/blogs/' + id)
             .then((response) => {
