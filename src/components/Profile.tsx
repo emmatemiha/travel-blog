@@ -62,7 +62,7 @@ const Profile = () => {
     const getUser = () => {
         const headers: any = {}
         if (authToken) headers['X-Authorization'] = authToken
-        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/users/' + id, { headers })
+        axios.get('http://localhost:4941/api/v1/users/' + id, { headers })
             .then((response) => {
                 setUser(response.data)
                 setFirstName(response.data.firstName)
@@ -75,7 +75,7 @@ const Profile = () => {
     }
 
     const getSeries = () => {
-        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/users/' + id + '/series')
+        axios.get('http://localhost:4941/api/v1/users/' + id + '/series')
             .then((response) => {
                 setSeries(response.data.sort())
             }, (error) => {
@@ -85,7 +85,7 @@ const Profile = () => {
     }
 
     const getBlogs = () => {
-        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs', {
+        axios.get('http://localhost:4941/api/v1/blogs', {
             params: { creatorId: id }
         })
             .then((response) => {
@@ -109,15 +109,15 @@ const Profile = () => {
     }
 
     const getCities = () => {
-        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/cities')
+        axios.get('http://localhost:4941/api/v1/blogs/cities')
             .then((response) => { setCities(response.data) },
-            (error) => { setErrorFlag(true); setErrorMessage(error.toString()) })
+                (error) => { setErrorFlag(true); setErrorMessage(error.toString()) })
     }
 
     const getCategories = () => {
-        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/categories')
+        axios.get('http://localhost:4941/api/v1/blogs/categories')
             .then((response) => { setCategories(response.data) },
-            (error) => { setErrorFlag(true); setErrorMessage(error.toString()) })
+                (error) => { setErrorFlag(true); setErrorMessage(error.toString()) })
     }
 
     const getCityName = (cityId: number) => {
@@ -176,19 +176,19 @@ const Profile = () => {
             updateData.currentPassword = currentPassword
         }
 
-        axios.patch('https://seng365.csse.canterbury.ac.nz/api/v1/users/' + id, updateData, {
+        axios.patch('http://localhost:4941/api/v1/users/' + id, updateData, {
             headers: { 'X-Authorization': authToken }
         })
             .then(() => {
                 if (removeImage) {
-                    axios.delete('https://seng365.csse.canterbury.ac.nz/api/v1/users/' + id + '/image', {
+                    axios.delete('http://localhost:4941/api/v1/users/' + id + '/image', {
                         headers: { 'X-Authorization': authToken }
                     }).then(() => {
                         setImageTimestamp(Date.now())
                     })
                 }
                 if (profilePic) {
-                    axios.put('https://seng365.csse.canterbury.ac.nz/api/v1/users/' + id + '/image', profilePic, {
+                    axios.put('http://localhost:4941/api/v1/users/' + id + '/image', profilePic, {
                         headers: { 'Content-Type': profilePic.type, 'X-Authorization': authToken }
                     }).then(() => {
                         setImageTimestamp(Date.now())
@@ -215,7 +215,7 @@ const Profile = () => {
                 border: '1px solid #0c2c1b',
                 borderRadius: '10px',
                 overflow: 'hidden',
-                width: '197px',
+                width: '100%',
                 background: 'white',
                 display: 'flex',
                 flexDirection: 'column',
@@ -223,43 +223,43 @@ const Profile = () => {
             }}
         >
             <img
-                src={'https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + blog.blogId + '/image'}
+                src={'http://localhost:4941/api/v1/blogs/' + blog.blogId + '/image'}
                 alt={blog.title}
-                style={{width: '100%', height: '150px', objectFit: 'cover', display: 'block'}}
+                style={{ width: '100%', height: '150px', objectFit: 'cover', display: 'block' }}
                 onError={(e: any) => { e.target.style.display = 'none' }}
             />
-            <div style={{padding: '14px'}}>
-                <p style={{margin: '0 0 6px', fontWeight: 700, color: '#0c2c1b', fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', lineHeight: 1.1, wordBreak: 'break-word', textDecoration: 'underline'}}>
+            <div style={{ padding: '14px' }}>
+                <p style={{ margin: '0 0 6px', fontWeight: 700, color: '#0c2c1b', fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', lineHeight: 1.1, wordBreak: 'break-word', textDecoration: 'underline' }}>
                     {blog.title}
                 </p>
-                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', margin: '0 0 4px'}}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', margin: '0 0 4px' }}>
                     <img
-                        src={'https://seng365.csse.canterbury.ac.nz/api/v1/users/' + blog.creatorId + '/image'}
+                        src={'http://localhost:4941/api/v1/users/' + blog.creatorId + '/image'}
                         alt="Creator"
-                        style={{width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b'}}
+                        style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b' }}
                         onError={(e: any) => { e.target.src = defaultPfp }}
                     />
-                    <p style={{margin: 0, fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif", wordBreak: 'break-word'}}>
+                    <p style={{ margin: 0, fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif", wordBreak: 'break-word' }}>
                         By {blog.creatorFirstName} {blog.creatorLastName}
                     </p>
                 </div>
-                <p style={{margin: '0 0 4px', fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif"}}>
+                <p style={{ margin: '0 0 4px', fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif" }}>
                     {new Date(blog.creationDate).toLocaleDateString('en-NZ')}
                 </p>
-                <p style={{margin: '0 0 4px', fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif"}}>
+                <p style={{ margin: '0 0 4px', fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif" }}>
                     📍 {getCityName(blog.cityId)}
                 </p>
-                <p style={{margin: '0 0 4px', fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif"}}>
+                <p style={{ margin: '0 0 4px', fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif" }}>
                     {getCategoryNames(blog.categoryIds)}
                 </p>
-                <p style={{margin: '0 0 10px', fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif"}}>
+                <p style={{ margin: '0 0 10px', fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif" }}>
                     ♡ {blog.numReactions} reactions
                 </p>
                 <Button
                     variant="contained"
                     size="small"
                     onClick={() => navigate('/blogs/' + blog.blogId)}
-                    sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}}}
+                    sx={{ backgroundColor: "#0c2c1b", "&:hover": { backgroundColor: "#071a10" } }}
                 >
                     View
                 </Button>
@@ -283,13 +283,13 @@ const Profile = () => {
     }
 
     return (
-        <div style={{background: '#eef2ee', minHeight: '100vh', padding: '20px'}}>
+        <div style={{ background: '#eef2ee', minHeight: '100vh', padding: '20px' }}>
             <Paper elevation={3} style={card}>
-                <div style={{display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '40px', paddingBottom: '28px', borderBottom: '1px solid #d8e0d8'}}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '40px', paddingBottom: '28px', borderBottom: '1px solid #d8e0d8' }}>
                     <img
-                        src={'https://seng365.csse.canterbury.ac.nz/api/v1/users/' + id + '/image?t=' + imageTimestamp}
+                        src={'http://localhost:4941/api/v1/users/' + id + '/image?t=' + imageTimestamp}
                         alt="Profile"
-                        style={{width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #0c2c1b'}}
+                        style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #0c2c1b' }}
                         onError={(e: any) => { e.target.src = defaultPfp }}
                     />
                     <div style={{
@@ -311,12 +311,12 @@ const Profile = () => {
                         </h1>
 
                         {isOwnProfile && user.email && (
-                            <p style={{margin: '18px 0 0', color: '#777', fontFamily: "'DM Sans', sans-serif", fontSize: '14px'}}>{user.email}</p>
+                            <p style={{ margin: '18px 0 0', color: '#777', fontFamily: "'DM Sans', sans-serif", fontSize: '14px' }}>{user.email}</p>
                         )}
 
                         {isOwnProfile && (
                             <Button variant="outlined" onClick={handleEditDialogOpen}
-                                sx={{color: "#0c2c1b", borderColor: "#0c2c1b", marginTop: '14px', textTransform: 'none', fontFamily: "'DM Sans', sans-serif"}}>
+                                sx={{ color: "#0c2c1b", borderColor: "#0c2c1b", marginTop: '14px', textTransform: 'none', fontFamily: "'DM Sans', sans-serif" }}>
                                 Edit Profile
                             </Button>
                         )}
@@ -329,7 +329,7 @@ const Profile = () => {
                         color: '#0c2c1b',
                         fontSize: '22px',
                         margin: '34px 0 18px'
-                        }}>
+                    }}>
                         Series
                     </h2>
                 )}
@@ -350,7 +350,7 @@ const Profile = () => {
                         }}>
 
                         <AccordionSummary
-                            expandIcon={<ExpandMoreIcon sx={{color: '#0c2c1b'}} />}
+                            expandIcon={<ExpandMoreIcon sx={{ color: '#0c2c1b' }} />}
                             sx={{
                                 background: '#eef2ee',
                                 padding: '10px 18px'
@@ -369,8 +369,8 @@ const Profile = () => {
 
                         <AccordionDetails style={{
                             padding: '20px',
-                            display: 'flex',
-                            flexWrap: 'wrap',
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(3, 1fr)',
                             gap: '18px'
                         }}>
                             {getBlogsForSeries(seriesName).map((blog: any) => blogCard(blog))}
@@ -379,7 +379,7 @@ const Profile = () => {
                 ))}
 
 
-                
+
                 {getBlogsWithNoSeries().length > 0 && (
                     <h2 style={{
                         fontFamily: "'DM Sans', sans-serif",
@@ -404,7 +404,7 @@ const Profile = () => {
                         }}>
 
                         <AccordionSummary
-                            expandIcon={<ExpandMoreIcon sx={{color: '#0c2c1b'}} />}
+                            expandIcon={<ExpandMoreIcon sx={{ color: '#0c2c1b' }} />}
                             sx={{
                                 background: '#eef2ee',
                                 padding: '10px 18px'
@@ -413,8 +413,8 @@ const Profile = () => {
 
                         <AccordionDetails style={{
                             padding: '20px',
-                            display: 'flex',
-                            flexWrap: 'wrap',
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(3, 1fr)',
                             gap: '18px'
                         }}>
                             {getBlogsWithNoSeries().map((blog: any) => blogCard(blog))}
@@ -433,11 +433,11 @@ const Profile = () => {
                 </DialogTitle>
                 <DialogContent>
                     {editError !== "" && (
-                        <Alert severity="error" style={{marginBottom: '16px'}}>
+                        <Alert severity="error" style={{ marginBottom: '16px' }}>
                             {editError}
                         </Alert>
                     )}
-                    <div style={{display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px'}}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
                         <div>
                             <p style={{
                                 margin: '0 0 8px 0',
@@ -449,7 +449,7 @@ const Profile = () => {
                             <input type="text" value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)} style={inputStyle}
                                 className="green-placeholder"
-                                />
+                            />
                         </div>
                         <div>
                             <p style={{
@@ -461,7 +461,7 @@ const Profile = () => {
                             </p>
                             <input type="text" value={lastName}
                                 className="green-placeholder"
-                                onChange={(e) => setLastName(e.target.value)} style={inputStyle}/>
+                                onChange={(e) => setLastName(e.target.value)} style={inputStyle} />
                         </div>
                         <div>
                             <p style={{
@@ -473,7 +473,7 @@ const Profile = () => {
                             </p>
                             <input type="email" value={email}
                                 className="green-placeholder"
-                                onChange={(e) => setEmail(e.target.value)} style={inputStyle}/>
+                                onChange={(e) => setEmail(e.target.value)} style={inputStyle} />
                         </div>
                         <div>
                             <p style={{
@@ -483,7 +483,7 @@ const Profile = () => {
                             }}>
                                 Current password (needed if changing password)
                             </p>
-                            <div style={{position: 'relative'}}>
+                            <div style={{ position: 'relative' }}>
                                 <input
                                     type={showCurrentPassword ? "text" : "password"}
                                     placeholder="Current password"
@@ -494,7 +494,7 @@ const Profile = () => {
                                 />
                                 <VisibilityIcon
                                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                    style={{position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#0c2c1b'}}
+                                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#0c2c1b' }}
                                 />
                             </div>
                         </div>
@@ -506,7 +506,7 @@ const Profile = () => {
                             }}>
                                 New password
                             </p>
-                            <div style={{position: 'relative'}}>
+                            <div style={{ position: 'relative' }}>
                                 <input
                                     type={showNewPassword ? "text" : "password"}
                                     placeholder="New password"
@@ -517,7 +517,7 @@ const Profile = () => {
                                 />
                                 <VisibilityIcon
                                     onClick={() => setShowNewPassword(!showNewPassword)}
-                                    style={{position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#0c2c1b'}}
+                                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#0c2c1b' }}
                                 />
                             </div>
                         </div>
@@ -527,30 +527,30 @@ const Profile = () => {
                                 color: '#0c2c1b',
                                 fontFamily: "'DM Sans', sans-serif"
                             }}>
-                                Profile picture 
+                                Profile picture
                             </p>
                             <input type="file" accept="image/jpeg, image/png, image/gif"
                                 className="green-placeholder"
-                                onChange={(e) => setProfilePic(e.target.files ? e.target.files[0] : null)}/>
-                            <p style={{color: '#6e6e6e', fontSize: '12px', margin: '4px 0 0', fontFamily: "'DM Sans', sans-serif"}}>Accepted formats: JPEG, PNG, GIF</p>
+                                onChange={(e) => setProfilePic(e.target.files ? e.target.files[0] : null)} />
+                            <p style={{ color: '#6e6e6e', fontSize: '12px', margin: '4px 0 0', fontFamily: "'DM Sans', sans-serif" }}>Accepted formats: JPEG, PNG, GIF</p>
                         </div>
-                        <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <input type="checkbox" checked={removeImage}
-                                onChange={(e) => setRemoveImage(e.target.checked)}/>
+                                onChange={(e) => setRemoveImage(e.target.checked)} />
                             <p style={{
                                 margin: '0 0 8px 0',
                                 color: '#0c2c1b',
                                 fontFamily: "'DM Sans', sans-serif"
                             }}>
-                                Remove profile picture 
+                                Remove profile picture
                             </p>
                         </div>
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleEditDialogClose} sx={{color: "#0c2c1b"}}>Cancel</Button>
+                    <Button onClick={handleEditDialogClose} sx={{ color: "#0c2c1b" }}>Cancel</Button>
                     <Button variant="contained" onClick={saveProfile}
-                        sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}}}>
+                        sx={{ backgroundColor: "#0c2c1b", "&:hover": { backgroundColor: "#071a10" } }}>
                         Save Changes
                     </Button>
                 </DialogActions>

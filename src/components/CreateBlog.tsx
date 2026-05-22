@@ -47,7 +47,7 @@ const CreateBlog = () => {
     }, [])
 
     const getCities = () => {
-        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/cities')
+        axios.get('http://localhost:4941/api/v1/blogs/cities')
             .then((response) => {
                 setCities(response.data)
             }, (error) => {
@@ -57,7 +57,7 @@ const CreateBlog = () => {
     }
 
     const getCategories = () => {
-        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/categories')
+        axios.get('http://localhost:4941/api/v1/blogs/categories')
             .then((response) => {
                 setCategories(response.data)
             }, (error) => {
@@ -84,13 +84,13 @@ const CreateBlog = () => {
             blogData.series = series
         }
 
-        axios.post('https://seng365.csse.canterbury.ac.nz/api/v1/blogs', blogData, {
+        axios.post('http://localhost:4941/api/v1/blogs', blogData, {
             headers: { 'X-Authorization': authToken }
         })
             .then((response) => {
                 const newBlogId = response.data.blogId
                 if (image) {
-                    axios.put('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + newBlogId + '/image', image, {
+                    axios.put('http://localhost:4941/api/v1/blogs/' + newBlogId + '/image', image, {
                         headers: { 'Content-Type': image.type, 'X-Authorization': authToken }
                     })
                         .then(() => {
@@ -110,17 +110,17 @@ const CreateBlog = () => {
     }
 
     return (
-        <div style={{minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eef2ee', padding: '40px 0'}}>
+        <div style={{ minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eef2ee', padding: '40px 0' }}>
             <Paper elevation={0} style={card}>
-                <h1 style={{textAlign: 'center', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif", margin: '0 0 24px 0', fontSize: '28px'}}>Create Blog</h1>
+                <h1 style={{ textAlign: 'center', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif", margin: '0 0 24px 0', fontSize: '28px' }}>Create Blog</h1>
                 {errorFlag &&
                     <Alert severity="error">
                         <AlertTitle>Error</AlertTitle>
                         {errorMessage}
                     </Alert>}
-                <div style={{display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px'}}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}>
                     <div>
-                        <p style={{margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif"}}>Title*</p>
+                        <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>Title*</p>
                         <input
                             type="text"
                             placeholder="Blog title"
@@ -131,7 +131,7 @@ const CreateBlog = () => {
                         />
                     </div>
                     <div>
-                        <p style={{margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif"}}>Description*</p>
+                        <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>Description*</p>
                         <textarea
                             placeholder="Write your blog content here..."
                             value={description}
@@ -153,11 +153,11 @@ const CreateBlog = () => {
                         />
                     </div>
                     <div>
-                        <p style={{margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif"}}>City*</p>
+                        <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>City*</p>
                         <select
                             value={cityId}
                             onChange={(e) => setCityId(Number(e.target.value))}
-                            style={{...inputStyle, display: 'block', color: '#0c2c1b', background: 'white',}}>
+                            style={{ ...inputStyle, display: 'block', color: '#0c2c1b', background: 'white', }}>
                             <option value="">Select a city</option>
                             {cities.map((city: any) => (
                                 <option key={city.cityId} value={city.cityId}>{city.name}</option>
@@ -165,14 +165,14 @@ const CreateBlog = () => {
                         </select>
                     </div>
                     <div>
-                        <p style={{margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif"}}>Categories*</p>
-                        <FormControl style={{width: '100%'}}>
+                        <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>Categories*</p>
+                        <FormControl style={{ width: '100%' }}>
                             <Select
                                 multiple
                                 displayEmpty
                                 value={selectedCategoryIds}
                                 onChange={(e) => setSelectedCategoryIds(e.target.value as number[])}
-                                input={<OutlinedInput/>}
+                                input={<OutlinedInput />}
                                 renderValue={(selected: any) => {
                                     if (selected.length === 0) return "Select categories"
                                     return `${selected.length} selected`
@@ -217,14 +217,14 @@ const CreateBlog = () => {
                                                 }
                                             }}
                                         />
-                                        <ListItemText primary={category.name}/>
+                                        <ListItemText primary={category.name} />
                                     </MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
                     </div>
                     <div>
-                        <p style={{margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif"}}>Series (optional)</p>
+                        <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>Series (optional)</p>
                         <input
                             type="text"
                             placeholder="Series name"
@@ -235,21 +235,22 @@ const CreateBlog = () => {
                         />
                     </div>
                     <div style={{ textAlign: 'center' }}>
-                        <p style={{margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif"}}>Image*</p>
-                        <label style={{cursor: 'pointer', color: '#0c2c1b', border: '1px solid #0c2c1b', borderRadius: '6px', padding: '8px 16px', fontFamily: "'DM Sans', sans-serif", fontSize: '14px'}}>
+                        <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>Image*</p>
+                        <label style={{ cursor: 'pointer', color: '#0c2c1b', border: '1px solid #0c2c1b', borderRadius: '6px', padding: '8px 16px', fontFamily: "'DM Sans', sans-serif", fontSize: '14px' }}>
                             Choose file
                             <input
                                 type="file"
                                 accept="image/jpeg, image/png, image/gif"
                                 onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
-                                style={{display: 'none'}}
+                                style={{ display: 'none' }}
                             />
                         </label>
-                        {image && <p style={{color: '#0c2c1b', fontSize: '13px', marginTop: '4px'}}>{image.name}</p>}
-                        {!image && <p style={{color: '#6e6e6e', fontSize: '13px', marginTop: '4px'}}>No file chosen</p>}
+                        {image && <p style={{ color: '#0c2c1b', fontSize: '13px', marginTop: '4px' }}>{image.name}</p>}
+                        {!image && <p style={{ color: '#6e6e6e', fontSize: '13px', marginTop: '4px' }}>No file chosen</p>}
+                        <p style={{ color: '#6e6e6e', fontSize: '12px', margin: '0px 0 0', fontFamily: "'DM Sans', sans-serif" }}>Accepted formats: JPEG, PNG, GIF</p>
                     </div>
                     <Button variant="contained" fullWidth onClick={createBlog}
-                        sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}}}
+                        sx={{ backgroundColor: "#0c2c1b", "&:hover": { backgroundColor: "#071a10" } }}
                     >
                         Create Blog
                     </Button>

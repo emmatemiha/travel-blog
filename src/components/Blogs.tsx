@@ -40,15 +40,15 @@ const Blogs = () => {
             count: pageSize,
             startIndex: (currentPage - 1) * pageSize
         }
-        
+
         if (searchQuery !== "") {
             params.q = searchQuery
         }
-        
+
         if (selectedCityIds.length > 0) {
             params.cityIds = selectedCityIds
         }
-        
+
         if (selectedCategoryIds.length > 0) {
             params.categoryIds = selectedCategoryIds
         }
@@ -56,8 +56,8 @@ const Blogs = () => {
         if (numReactions !== "") {
             params.numReactions = Number(numReactions)
         }
-        
-        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs', { params })
+
+        axios.get('http://localhost:4941/api/v1/blogs', { params })
             .then((response) => {
                 setErrorFlag(false)
                 setErrorMessage("")
@@ -70,7 +70,7 @@ const Blogs = () => {
     }
 
     const getCities = () => {
-        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/cities')
+        axios.get('http://localhost:4941/api/v1/blogs/cities')
             .then((response) => {
                 setErrorFlag(false)
                 setErrorMessage("")
@@ -82,7 +82,7 @@ const Blogs = () => {
     }
 
     const getCategories = () => {
-        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/categories')
+        axios.get('http://localhost:4941/api/v1/blogs/categories')
             .then((response) => {
                 setErrorFlag(false)
                 setErrorMessage("")
@@ -137,11 +137,11 @@ const Blogs = () => {
                     }}>
                         {row.title}
                     </div>
-                    <div style={{fontSize: '14px', color: '#0c2c1b', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', wordBreak: 'break-word'}}>
+                    <div style={{ fontSize: '14px', color: '#0c2c1b', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', wordBreak: 'break-word' }}>
                         <img
-                            src={'https://seng365.csse.canterbury.ac.nz/api/v1/users/' + row.creatorId + '/image'}
+                            src={'http://localhost:4941/api/v1/users/' + row.creatorId + '/image'}
                             alt="Creator"
-                            style={{width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b'}}
+                            style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b' }}
                             onError={(e: any) => { e.target.src = '/src/assets/default_pfp.png' }}
                         />
                         By {row.creatorFirstName} {row.creatorLastName}
@@ -152,7 +152,7 @@ const Blogs = () => {
                 </div>
 
                 <img
-                    src={'https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + row.blogId + '/image'}
+                    src={'http://localhost:4941/api/v1/blogs/' + row.blogId + '/image'}
                     alt={row.title}
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                     style={{ width: '100%', height: '160px', objectFit: 'cover' }}
@@ -220,6 +220,7 @@ const Blogs = () => {
                             fontFamily: "'DM Sans', sans-serif",
                             background: 'white',
                             color: '#0c2c1b',
+                            cursor: 'pointer'
                         }}
                     >
                         <option value="ALPHABETICAL_ASC">Title A-Z</option>
@@ -336,6 +337,7 @@ const Blogs = () => {
                             fontFamily: "'DM Sans', sans-serif",
                             width: '130px',
                             color: '#0c2c1b',
+                            cursor: 'pointer'
                         }}
                     />
 
@@ -375,7 +377,7 @@ const Blogs = () => {
                     {blog_rows()}
                 </div>
 
-                <div style={{display: 'flex', justifyContent: 'center', marginTop: '20px'}}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                     <Pagination
                         count={Math.ceil(count / pageSize)}
                         page={currentPage}
@@ -384,14 +386,14 @@ const Blogs = () => {
                         showFirstButton
                         showLastButton
                         sx={{
-                            '& .MuiPaginationItem-root': {color: '#0c2c1b',},
-                            '& .Mui-selected': {backgroundColor: '#0c2c1b !important', color: 'white',},
-                            '& .Mui-selected:hover': {backgroundColor: '#071a10 !important',},
+                            '& .MuiPaginationItem-root': { color: '#0c2c1b', },
+                            '& .Mui-selected': { backgroundColor: '#0c2c1b !important', color: 'white', },
+                            '& .Mui-selected:hover': { backgroundColor: '#071a10 !important', },
                         }}
                     />
                 </div>
-            </div>         
-        )    
+            </div>
+        )
     }
 }
 

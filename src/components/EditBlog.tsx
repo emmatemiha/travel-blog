@@ -44,7 +44,7 @@ const EditBlog = () => {
     }, [id])
 
     const getBlog = () => {
-        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + id)
+        axios.get('http://localhost:4941/api/v1/blogs/' + id)
             .then((response) => {
                 const blog = response.data
                 if (blog.creatorId !== userId) {
@@ -64,7 +64,7 @@ const EditBlog = () => {
     }
 
     const getCities = () => {
-        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/cities')
+        axios.get('http://localhost:4941/api/v1/blogs/cities')
             .then((response) => {
                 setCities(response.data)
             }, (error) => {
@@ -74,7 +74,7 @@ const EditBlog = () => {
     }
 
     const getCategories = () => {
-        axios.get('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/categories')
+        axios.get('http://localhost:4941/api/v1/blogs/categories')
             .then((response) => {
                 setCategories(response.data)
             }, (error) => {
@@ -101,12 +101,12 @@ const EditBlog = () => {
             blogData.series = series
         }
 
-        axios.patch('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + id, blogData, {
+        axios.patch('http://localhost:4941/api/v1/blogs/' + id, blogData, {
             headers: { 'X-Authorization': authToken }
         })
             .then(() => {
                 if (image) {
-                    axios.put('https://seng365.csse.canterbury.ac.nz/api/v1/blogs/' + id + '/image', image, {
+                    axios.put('http://localhost:4941/api/v1/blogs/' + id + '/image', image, {
                         headers: { 'Content-Type': image.type, 'X-Authorization': authToken }
                     })
                         .then(() => {
@@ -245,13 +245,13 @@ const EditBlog = () => {
                             Categories*
                         </p>
 
-                        <FormControl style={{width: '100%'}}>
+                        <FormControl style={{ width: '100%' }}>
                             <Select
                                 multiple
                                 displayEmpty
                                 value={selectedCategoryIds}
                                 onChange={(e) => setSelectedCategoryIds(e.target.value as number[])}
-                                input={<OutlinedInput/>}
+                                input={<OutlinedInput />}
                                 renderValue={(selected: any) => {
                                     if (selected.length === 0) return "Select categories"
                                     return `${selected.length} selected`
@@ -297,7 +297,7 @@ const EditBlog = () => {
                                             }}
                                         />
 
-                                        <ListItemText primary={category.name}/>
+                                        <ListItemText primary={category.name} />
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -370,7 +370,7 @@ const EditBlog = () => {
                                 type="file"
                                 accept="image/jpeg, image/png, image/gif"
                                 onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
-                                style={{display: 'none'}}
+                                style={{ display: 'none' }}
                             />
                         </label>
 
@@ -393,9 +393,10 @@ const EditBlog = () => {
                                 No file chosen
                             </p>
                         }
+                        <p style={{ color: '#6e6e6e', fontSize: '12px', margin: '0px 0 0', fontFamily: "'DM Sans', sans-serif" }}>Accepted formats: JPEG, PNG, GIF</p>
                     </div>
 
-                    <div style={{display: 'flex', gap: '12px', marginTop: '8px'}}>
+                    <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
                         <Button
                             variant="outlined"
                             onClick={() => navigate('/blogs/' + id)}

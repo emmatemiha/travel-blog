@@ -41,7 +41,7 @@ const Login = () => {
             return
         }
 
-        axios.post('https://seng365.csse.canterbury.ac.nz/api/v1/users/login', {
+        axios.post('http://localhost:4941/api/v1/users/login', {
             email: email,
             password: password
         })
@@ -59,15 +59,15 @@ const Login = () => {
     }
 
     return (
-        <div style={{minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eef2ee'}}>
+        <div style={{ minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eef2ee' }}>
             <Paper elevation={0} style={card}>
-                <h1 style={{textAlign: 'center', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif", margin: '0 0 24px 0'}}>Log in</h1>
+                <h1 style={{ textAlign: 'center', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif", margin: '0 0 24px 0' }}>Log in</h1>
                 {errorFlag &&
                     <Alert severity="error">
                         <AlertTitle>Error</AlertTitle>
                         {errorMessage}
                     </Alert>}
-                <div style={{display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px'}}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}>
                     <input
                         type="email"
                         placeholder="Email*"
@@ -76,7 +76,7 @@ const Login = () => {
                         className="green-placeholder"
                         style={inputStyle}
                     />
-                    <div style={{position: 'relative'}}>
+                    <div style={{ position: 'relative' }}>
                         <input
                             type={showPassword ? "text" : "password"}
                             placeholder="Password*"
@@ -87,15 +87,15 @@ const Login = () => {
                         />
                         <VisibilityIcon
                             onClick={() => setShowPassword(!showPassword)}
-                            style={{position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#0c2c1b'}}
+                            style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#0c2c1b' }}
                         />
                     </div>
                     <Button variant="contained" fullWidth onClick={Login}
-                        sx={{backgroundColor: "#0c2c1b", "&:hover": {backgroundColor: "#071a10"}}}
+                        sx={{ backgroundColor: "#0c2c1b", "&:hover": { backgroundColor: "#071a10" } }}
                     >
                         Log in
                     </Button>
-                    <p style={{textAlign: 'center', color: '#0c2c1b'}}>Don't have an account? <Link to="/register" style={{color: '#0c2c1b'}}>Sign up</Link></p>
+                    <p style={{ textAlign: 'center', color: '#0c2c1b' }}>Don't have an account? <Link to="/register" style={{ color: '#0c2c1b' }}>Sign up</Link></p>
                 </div>
             </Paper>
         </div>
