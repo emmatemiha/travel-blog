@@ -12,14 +12,14 @@ const Navbar = () => {
     const userId = useAuthStore(state => state.userId)
     const removeAuth = useAuthStore(state => state.removeAuth)
     const navigate = useNavigate()
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+    const [menuButton, setMenuButton] = React.useState<null | HTMLElement>(null)
 
     const handleMenuOpen = (event: React.MouseEvent<any>) => {
-        setAnchorEl(event.currentTarget)
+        setMenuButton(event.currentTarget)
     }
 
     const handleMenuClose = () => {
-        setAnchorEl(null)
+        setMenuButton(null)
     }
 
     const logout = () => {
@@ -38,41 +38,17 @@ const Navbar = () => {
 
     return (
         <nav style={{ background: '#0c2c1b', padding: '0px 24px', height: '60px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            {/* Home Button */}
+
             <div style={{ width: '160px', display: 'flex', alignItems: 'center' }}>
                 <Link to="/blogs">
                     <HomeIcon style={{ color: 'white', fontSize: '32px' }} />
                 </Link>
             </div>
 
-            {/* Centred Logo */}
             <div style={{ textAlign: 'center', flex: 1 }}>
-                {/* Swap the <span> below for an <img> once you have your PNG logo */}
-                {/* <img src="/logo.png" alt="Adventures in Aotearoa" style={{ height: '36px' }} /> */}
-                <div style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    color: 'white',
-                    fontSize: '22px',
-                    fontWeight: 700,
-                    lineHeight: 1.1,
-                    letterSpacing: '0.3px',
-                    whiteSpace: 'nowrap'
-                }}>
-                    Adventures in Aotearoa
-                </div>
-                <div style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    color: 'rgba(255,255,255,0.55)',
-                    fontSize: '10px',
-                    letterSpacing: '2.5px',
-                    textTransform: 'uppercase',
-                    marginTop: '1px',
-                }}>
-                    travel blog
-                </div>
+                <div style={{ fontFamily: "'Cormorant Garamond', serif", color: 'white', fontSize: '22px', fontWeight: 700, lineHeight: 1.1, letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>Adventures in Aotearoa</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", color: 'rgba(255,255,255,0.55)', fontSize: '10px', letterSpacing: '2.5px', textTransform: 'uppercase', marginTop: '1px' }}>travel blog</div>
             </div>
-
-
 
             <div style={{ width: '160px', display: 'flex', gap: '20px', alignItems: 'center', justifyContent: 'flex-end' }}>
                 {authToken ? (
@@ -91,8 +67,8 @@ const Navbar = () => {
                         />
 
                         <Menu
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
+                            anchorEl={menuButton}
+                            open={Boolean(menuButton)}
                             onClose={handleMenuClose}>
                             <MenuItem onClick={() => { handleMenuClose(); navigate('/profile/' + userId) }}
                                 sx={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b' }}>

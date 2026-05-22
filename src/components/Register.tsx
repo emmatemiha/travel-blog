@@ -61,6 +61,12 @@ const Register = () => {
             setPassword("")
             return
         }
+
+        if (firstName.length > 64) { setErrorFlag(true); setErrorMessage("First name must be 64 characters or less"); return }
+        if (lastName.length > 64) { setErrorFlag(true); setErrorMessage("Last name must be 64 characters or less"); return }
+        if (email.length > 256) { setErrorFlag(true); setErrorMessage("Email must be 256 characters or less"); return }
+        if (password.length > 64) { setErrorFlag(true); setErrorMessage("Password must be 64 characters or less"); setPassword(""); return }
+
         axios.post('http://localhost:4941/api/v1/users/register', {
             firstName: firstName,
             lastName: lastName,
@@ -68,7 +74,6 @@ const Register = () => {
             password: password
         })
             .then((response) => {
-                //const userId = response.data.userId
                 axios.post('http://localhost:4941/api/v1/users/login', {
                     email: email,
                     password: password

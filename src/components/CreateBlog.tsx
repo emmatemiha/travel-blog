@@ -84,6 +84,10 @@ const CreateBlog = () => {
             blogData.series = series
         }
 
+        if (title.length > 128) { setErrorFlag(true); setErrorMessage("Title must be 128 characters or less"); return }
+        if (description.length > 1024) { setErrorFlag(true); setErrorMessage("Description must be 1024 characters or less"); return }
+        if (series.length > 64) { setErrorFlag(true); setErrorMessage("Series must be 64 characters or less"); return }
+
         axios.post('http://localhost:4941/api/v1/blogs', blogData, {
             headers: { 'X-Authorization': authToken }
         })
@@ -136,19 +140,7 @@ const CreateBlog = () => {
                             placeholder="Write your blog content here..."
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            style={{
-                                padding: '14px',
-                                fontSize: '16px',
-                                borderRadius: '6px',
-                                border: '1px solid #0c2c1b',
-                                fontFamily: "'DM Sans', sans-serif",
-                                width: '100%',
-                                boxSizing: 'border-box',
-                                minHeight: '150px',
-                                color: '#0c2c1b',
-                                outline: 'none',
-                                resize: 'none',
-                            }}
+                            style={{ padding: '14px', fontSize: '16px', borderRadius: '6px', border: '1px solid #0c2c1b', fontFamily: "'DM Sans', sans-serif", width: '100%', boxSizing: 'border-box', minHeight: '150px', color: '#0c2c1b', outline: 'none', resize: 'none' }}
                             className="green-placeholder"
                         />
                     </div>
@@ -174,33 +166,14 @@ const CreateBlog = () => {
                                 onChange={(e) => setSelectedCategoryIds(e.target.value as number[])}
                                 input={<OutlinedInput />}
                                 renderValue={(selected: any) => {
-                                    if (selected.length === 0) return "Select categories"
+                                    if (selected.length === 0) {
+                                        return "Select categories"
+                                    }
                                     return `${selected.length} selected`
                                 }}
                                 sx={{
-                                    color: '#0c2c1b',
-
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#0c2c1b',
-                                    },
-
-                                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#0c2c1b',
-                                    },
-
-                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#0c2c1b',
-                                    },
-
-                                    '& .MuiSvgIcon-root': {
-                                        color: '#0c2c1b',
-                                    },
-
-                                    '& .MuiSelect-select': {
-                                        textAlign: 'left',
-                                        display: 'block',
-                                        color: '#0c2c1b',
-                                    }
+                                    color: '#0c2c1b', '& .MuiOutlinedInput-notchedOutline': {borderColor: '#0c2c1b'}, '&:hover .MuiOutlinedInput-notchedOutline': {borderColor: '#0c2c1b'},
+                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {borderColor: '#0c2c1b'}, '& .MuiSvgIcon-root': {color: '#0c2c1b'}, '& .MuiSelect-select': {textAlign: 'left', display: 'block', color: '#0c2c1b'}
                                 }}
                             >
                                 {categories.map((category: any) => (
@@ -210,12 +183,7 @@ const CreateBlog = () => {
                                     >
                                         <Checkbox
                                             checked={selectedCategoryIds.includes(category.categoryId)}
-                                            sx={{
-                                                color: '#0c2c1b',
-                                                '&.Mui-checked': {
-                                                    color: '#0c2c1b',
-                                                }
-                                            }}
+                                            sx={{ color: '#0c2c1b', '&.Mui-checked': {color: '#0c2c1b'} }}
                                         />
                                         <ListItemText primary={category.name} />
                                     </MenuItem>

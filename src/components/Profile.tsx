@@ -127,8 +127,8 @@ const Profile = () => {
 
     const getCategoryNames = (categoryIds: number[]) => {
         return categoryIds.map((id: number) => {
-            const cat = categories.find((c: any) => c.categoryId === id)
-            return cat ? cat.name : id
+            const category = categories.find((c: any) => c.categoryId === id)
+            return category ? category.name : id
         }).join(', ')
     }
 
@@ -176,6 +176,11 @@ const Profile = () => {
             updateData.currentPassword = currentPassword
         }
 
+        if (firstName.length > 64) { setEditError("First name must be 64 characters or less"); return }
+        if (lastName.length > 64) { setEditError("Last name must be 64 characters or less"); return }
+        if (email.length > 256) { setEditError("Email must be 256 characters or less"); return }
+        if (newPassword.length > 64) { setEditError("Password must be 64 characters or less"); return }
+
         axios.patch('http://localhost:4941/api/v1/users/' + id, updateData, {
             headers: { 'X-Authorization': authToken }
         })
@@ -211,16 +216,7 @@ const Profile = () => {
     const blogCard = (blog: any) => (
         <div
             key={blog.blogId}
-            style={{
-                border: '1px solid #0c2c1b',
-                borderRadius: '10px',
-                overflow: 'hidden',
-                width: '100%',
-                background: 'white',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-            }}
+            style={{ border: '1px solid #0c2c1b', borderRadius: '10px', overflow: 'hidden', width: '100%', background: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}
         >
             <img
                 src={'http://localhost:4941/api/v1/blogs/' + blog.blogId + '/image'}
@@ -292,26 +288,11 @@ const Profile = () => {
                         style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #0c2c1b' }}
                         onError={(e: any) => { e.target.src = defaultPfp }}
                     />
-                    <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        justifyContent: 'center',
-                        textAlign: 'left'
-                    }}>
-                        <h1 style={{
-                            margin: 0,
-                            color: '#0c2c1b',
-                            fontFamily: "'Cormorant Garamond', serif",
-                            fontSize: '42px',
-                            fontWeight: 700,
-                            wordBreak: 'break-word'
-                        }}>
-                            {user.firstName} {user.lastName}
-                        </h1>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', textAlign: 'left', minWidth: 0, width: '100%' }}>
+                        <h1 style={{ margin: 0, color: '#0c2c1b', fontFamily: "'Cormorant Garamond', serif", fontSize: '42px', fontWeight: 700, wordBreak: 'break-word', lineHeight: '1.1' }}>{user.firstName} {user.lastName}</h1>
 
                         {isOwnProfile && user.email && (
-                            <p style={{ margin: '18px 0 0', color: '#777', fontFamily: "'DM Sans', sans-serif", fontSize: '14px' }}>{user.email}</p>
+                            <p style={{ margin: '18px 0 0', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif", fontSize: '14px', wordBreak: 'break-word' }}>{user.email}</p>
                         )}
 
                         {isOwnProfile && (
@@ -324,14 +305,7 @@ const Profile = () => {
                 </div>
 
                 {series.length > 0 && (
-                    <h2 style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        color: '#0c2c1b',
-                        fontSize: '22px',
-                        margin: '34px 0 18px'
-                    }}>
-                        Series
-                    </h2>
+                    <h2 style={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', fontSize: '22px', margin: '34px 0 18px' }}>Series</h2>
                 )}
 
                 {series.map((seriesName: string) => (
@@ -339,40 +313,17 @@ const Profile = () => {
                         key={seriesName}
                         disableGutters
                         elevation={0}
-                        sx={{
-                            border: '1px solid #0c2c1b',
-                            borderRadius: '10px',
-                            marginBottom: '16px',
-                            overflow: 'hidden',
-                            '&:before': {
-                                display: 'none'
-                            }
-                        }}>
+                        sx={{ border: '1px solid #0c2c1b', borderRadius: '10px', marginBottom: '16px', overflow: 'hidden', '&:before': { display: 'none' }}}>
 
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon sx={{ color: '#0c2c1b' }} />}
-                            sx={{
-                                background: '#eef2ee',
-                                padding: '10px 18px'
-                            }}>
+                            sx={{ background: '#eef2ee', padding: '10px 18px' }}>
 
-                            <span style={{
-                                fontFamily: "'DM Sans', sans-serif",
-                                color: '#0c2c1b',
-                                fontSize: '20px',
-                                fontWeight: 700
-                            }}>
-                                {seriesName}
-                            </span>
+                            <span style={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', fontSize: '20px', fontWeight: 700 }}>{seriesName}</span>
 
                         </AccordionSummary>
 
-                        <AccordionDetails style={{
-                            padding: '20px',
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(3, 1fr)',
-                            gap: '18px'
-                        }}>
+                        <AccordionDetails style={{ padding: '20px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '18px' }}>
                             {getBlogsForSeries(seriesName).map((blog: any) => blogCard(blog))}
                         </AccordionDetails>
                     </Accordion>
@@ -381,14 +332,7 @@ const Profile = () => {
 
 
                 {getBlogsWithNoSeries().length > 0 && (
-                    <h2 style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        color: '#0c2c1b',
-                        fontSize: '22px',
-                        margin: '34px 0 18px'
-                    }}>
-                        No Series
-                    </h2>
+                    <h2 style={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', fontSize: '22px', margin: '34px 0 18px' }}>No Series</h2>
                 )}
                 {getBlogsWithNoSeries().length > 0 && (
                     <Accordion
@@ -405,18 +349,10 @@ const Profile = () => {
 
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon sx={{ color: '#0c2c1b' }} />}
-                            sx={{
-                                background: '#eef2ee',
-                                padding: '10px 18px'
-                            }}>
+                            sx={{ background: '#eef2ee', padding: '10px 18px' }}>
                         </AccordionSummary>
 
-                        <AccordionDetails style={{
-                            padding: '20px',
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(3, 1fr)',
-                            gap: '18px'
-                        }}>
+                        <AccordionDetails style={{ padding: '20px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '18px' }}>
                             {getBlogsWithNoSeries().map((blog: any) => blogCard(blog))}
                         </AccordionDetails>
                     </Accordion>
@@ -424,11 +360,7 @@ const Profile = () => {
             </Paper>
 
             <Dialog open={openEditDialog} onClose={handleEditDialogClose} fullWidth maxWidth="sm">
-                <DialogTitle sx={{
-                    color: '#0c2c1b',
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontWeight: 700
-                }}>
+                <DialogTitle sx={{ color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif", fontWeight: 700 }}>
                     Edit Profile
                 </DialogTitle>
                 <DialogContent>
@@ -439,11 +371,7 @@ const Profile = () => {
                     )}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
                         <div>
-                            <p style={{
-                                margin: '0 0 8px 0',
-                                color: '#0c2c1b',
-                                fontFamily: "'DM Sans', sans-serif"
-                            }}>
+                            <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif"}}>
                                 First name
                             </p>
                             <input type="text" value={firstName}
@@ -452,11 +380,7 @@ const Profile = () => {
                             />
                         </div>
                         <div>
-                            <p style={{
-                                margin: '0 0 8px 0',
-                                color: '#0c2c1b',
-                                fontFamily: "'DM Sans', sans-serif"
-                            }}>
+                            <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>
                                 Last name
                             </p>
                             <input type="text" value={lastName}
@@ -464,11 +388,7 @@ const Profile = () => {
                                 onChange={(e) => setLastName(e.target.value)} style={inputStyle} />
                         </div>
                         <div>
-                            <p style={{
-                                margin: '0 0 8px 0',
-                                color: '#0c2c1b',
-                                fontFamily: "'DM Sans', sans-serif"
-                            }}>
+                            <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>
                                 Email
                             </p>
                             <input type="email" value={email}
@@ -476,11 +396,7 @@ const Profile = () => {
                                 onChange={(e) => setEmail(e.target.value)} style={inputStyle} />
                         </div>
                         <div>
-                            <p style={{
-                                margin: '0 0 8px 0',
-                                color: '#0c2c1b',
-                                fontFamily: "'DM Sans', sans-serif"
-                            }}>
+                            <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>
                                 Current password (needed if changing password)
                             </p>
                             <div style={{ position: 'relative' }}>
@@ -499,11 +415,7 @@ const Profile = () => {
                             </div>
                         </div>
                         <div>
-                            <p style={{
-                                margin: '0 0 8px 0',
-                                color: '#0c2c1b',
-                                fontFamily: "'DM Sans', sans-serif"
-                            }}>
+                            <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>
                                 New password
                             </p>
                             <div style={{ position: 'relative' }}>
@@ -522,11 +434,7 @@ const Profile = () => {
                             </div>
                         </div>
                         <div>
-                            <p style={{
-                                margin: '0 0 8px 0',
-                                color: '#0c2c1b',
-                                fontFamily: "'DM Sans', sans-serif"
-                            }}>
+                            <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>
                                 Profile picture
                             </p>
                             <input type="file" accept="image/jpeg, image/png, image/gif"
@@ -537,11 +445,7 @@ const Profile = () => {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <input type="checkbox" checked={removeImage}
                                 onChange={(e) => setRemoveImage(e.target.checked)} />
-                            <p style={{
-                                margin: '0 0 8px 0',
-                                color: '#0c2c1b',
-                                fontFamily: "'DM Sans', sans-serif"
-                            }}>
+                            <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>
                                 Remove profile picture
                             </p>
                         </div>

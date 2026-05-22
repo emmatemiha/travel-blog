@@ -31,10 +31,9 @@ const Blogs = () => {
 
     React.useEffect(() => {
         getBlogs()
-    }, [sortBy, searchQuery, selectedCityIds, selectedCategoryIds, currentPage, numReactions]) // reruns when these change
+    }, [sortBy, searchQuery, selectedCityIds, selectedCategoryIds, currentPage, numReactions])
 
     const getBlogs = () => {
-        // building the url with the parameters that can change
         const params: any = {
             sortBy: sortBy,
             count: pageSize,
@@ -116,25 +115,9 @@ const Blogs = () => {
 
     const blog_rows = () => {
         return blogs.map((row: any) =>
-            <div key={row.blogId} style={{
-                background: 'white',
-                borderRadius: '12px',
-                border: '1px solid #0c2c1b',
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
-            }}>
+            <div key={row.blogId} style={{ background: 'white', borderRadius: '12px', border: '1px solid #0c2c1b', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                 <div style={{ padding: '16px', textAlign: 'center' }}>
-                    <div style={{
-                        fontFamily: "'Cormorant Garamond', serif",
-                        fontSize: '28px',
-                        color: '#0c2c1b',
-                        fontWeight: 700,
-                        textDecoration: 'underline',
-                        marginBottom: '12px',
-                        wordBreak: 'break-word',
-                        lineHeight: '1.1'
-                    }}>
+                    <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '28px', color: '#0c2c1b', fontWeight: 700, textDecoration: 'underline', marginBottom: '12px', wordBreak: 'break-word', lineHeight: '1.1' }}>
                         {row.title}
                     </div>
                     <div style={{ fontSize: '14px', color: '#0c2c1b', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', wordBreak: 'break-word' }}>
@@ -196,33 +179,12 @@ const Blogs = () => {
     } else {
         return (
             <div style={{ background: '#eef2ee', minHeight: '100vh', padding: '20px' }}>
-                <div style={{
-                    background: 'white',
-                    borderRadius: '10px',
-                    padding: '12px 16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    flexWrap: 'wrap',
-                    marginBottom: '20px',
-                    border: '1px solid #0c2c1b',
-                }}>
+                <div style={{ background: 'white', borderRadius: '10px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '20px', border: '1px solid #0c2c1b' }}>
                     <span style={{ fontSize: '14px', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>Sort by:</span>
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
-                        style={{
-                            height: '38px',
-                            padding: '0 10px',
-                            fontSize: '14px',
-                            borderRadius: '6px',
-                            border: '1px solid #0c2c1b',
-                            fontFamily: "'DM Sans', sans-serif",
-                            background: 'white',
-                            color: '#0c2c1b',
-                            cursor: 'pointer'
-                        }}
-                    >
+                        style={{ height: '38px', padding: '0 10px', fontSize: '14px', borderRadius: '6px', border: '1px solid #0c2c1b', fontFamily: "'DM Sans', sans-serif", background: 'white', color: '#0c2c1b', cursor: 'pointer' }}>
                         <option value="ALPHABETICAL_ASC">Title A-Z</option>
                         <option value="ALPHABETICAL_DESC">Title Z-A</option>
                         <option value="REACTIONS_ASC">Reactions ascending</option>
@@ -241,29 +203,8 @@ const Blogs = () => {
                             onChange={(e) => { setSelectedCityIds(e.target.value as number[]); setCurrentPage(1) }}
                             input={<OutlinedInput label="City" />}
                             renderValue={(selected) => `${selected.length} selected`}
-                            sx={{
-                                fontFamily: "'DM Sans', sans-serif",
-                                fontSize: '14px',
-                                height: '38px',
-                                color: '#0c2c1b',
-
-                                '& .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: '#0c2c1b',
-                                },
-
-                                '&:hover .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: '#0c2c1b',
-                                },
-
-                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: '#0c2c1b',
-                                },
-
-                                '& .MuiSvgIcon-root': {
-                                    color: '#0c2c1b',
-                                }
-                            }}
-                        >
+                            sx={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', height: '38px', color: '#0c2c1b',
+                                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '& .MuiSvgIcon-root': { color: '#0c2c1b' } }}>
                             {cities.map((city: any) => (
                                 <MenuItem key={city.cityId} value={city.cityId}>
                                     <Checkbox
@@ -285,29 +226,8 @@ const Blogs = () => {
                             onChange={(e) => { setSelectedCategoryIds(e.target.value as number[]); setCurrentPage(1) }}
                             input={<OutlinedInput label="Category" />}
                             renderValue={(selected) => `${selected.length} selected`}
-                            sx={{
-                                fontFamily: "'DM Sans', sans-serif",
-                                fontSize: '14px',
-                                height: '38px',
-                                color: '#0c2c1b',
-
-                                '& .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: '#0c2c1b',
-                                },
-
-                                '&:hover .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: '#0c2c1b',
-                                },
-
-                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: '#0c2c1b',
-                                },
-
-                                '& .MuiSvgIcon-root': {
-                                    color: '#0c2c1b',
-                                }
-                            }}
-                        >
+                            sx={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', height: '38px', color: '#0c2c1b',
+                               '& .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '& .MuiSvgIcon-root': { color: '#0c2c1b' } }}>
                             {categories.map((category: any) => (
                                 <MenuItem key={category.categoryId} value={category.categoryId}>
                                     <Checkbox
@@ -328,46 +248,17 @@ const Blogs = () => {
                         min={0}
                         onChange={handleNumReactionsChange}
                         className="green-placeholder"
-                        style={{
-                            height: '38px',
-                            padding: '0 10px',
-                            fontSize: '14px',
-                            borderRadius: '6px',
-                            border: '1px solid #0c2c1b',
-                            fontFamily: "'DM Sans', sans-serif",
-                            width: '130px',
-                            color: '#0c2c1b',
-                            cursor: 'pointer'
-                        }}
+                        style={{ height: '38px', padding: '0 10px', fontSize: '14px', borderRadius: '6px', border: '1px solid #0c2c1b', fontFamily: "'DM Sans', sans-serif", width: '130px', color: '#0c2c1b', cursor: 'pointer' }}
                     />
 
-                    {/* Search with icon inside */}
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        border: '1px solid #0c2c1b',
-                        borderRadius: '6px',
-                        height: '38px',
-                        paddingLeft: '10px',
-                        background: 'white',
-                        flex: 1,
-                        minWidth: '160px',
-                    }}>
+                    <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #0c2c1b', borderRadius: '6px', height: '38px', paddingLeft: '10px', background: 'white', flex: 1, minWidth: '160px' }}>
                         <input
                             type="text"
                             placeholder="Search blogs..."
                             value={searchQuery}
                             onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1) }}
                             className="green-placeholder"
-                            style={{
-                                border: 'none',
-                                outline: 'none',
-                                fontSize: '14px',
-                                fontFamily: "'DM Sans', sans-serif",
-                                flex: 1,
-                                background: 'transparent',
-                                color: '#0c2c1b',
-                            }}
+                            style={{ border: 'none', outline: 'none', fontSize: '14px', fontFamily: "'DM Sans', sans-serif", flex: 1, background: 'transparent', color: '#0c2c1b' }}
                         />
                         <SearchIcon style={{ color: '#0c2c1b', fontSize: '20px', marginRight: '8px' }} />
                     </div>
@@ -385,11 +276,7 @@ const Blogs = () => {
                         shape="rounded"
                         showFirstButton
                         showLastButton
-                        sx={{
-                            '& .MuiPaginationItem-root': { color: '#0c2c1b', },
-                            '& .Mui-selected': { backgroundColor: '#0c2c1b !important', color: 'white', },
-                            '& .Mui-selected:hover': { backgroundColor: '#071a10 !important', },
-                        }}
+                        sx={{ '& .MuiPaginationItem-root': { color: '#0c2c1b' }, '& .Mui-selected': { backgroundColor: '#0c2c1b !important', color: 'white' }, '& .Mui-selected:hover': { backgroundColor: '#071a10 !important' } }}
                     />
                 </div>
             </div>

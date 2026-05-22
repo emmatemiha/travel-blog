@@ -35,7 +35,7 @@ const Login = () => {
     }
 
     const Login = () => {
-        if (email === "" || password === "") { // one or both empty
+        if (email === "" || password === "") {
             setErrorFlag(true)
             setErrorMessage("Please enter your email and password")
             return

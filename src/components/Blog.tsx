@@ -219,6 +219,9 @@ const Blog = () => {
             navigate('/login')
             return
         }
+
+        if (newComment.length > 512) { setErrorFlag(true); setErrorMessage("Comment must be 512 characters or less"); return }
+
         if (newComment === "") return
         axios.post('http://localhost:4941/api/v1/blogs/' + id + '/comments',
             { comment: newComment },
@@ -238,6 +241,9 @@ const Blog = () => {
             navigate('/login')
             return
         }
+
+        if (replyText.length > 512) { setErrorFlag(true); setErrorMessage("Reply must be 512 characters or less"); return }
+
         if (replyText === "") return
         axios.post('http://localhost:4941/api/v1/blogs/' + id + '/comments',
             { comment: replyText, parentId: parentId },
@@ -282,9 +288,7 @@ const Blog = () => {
 
     return (
         <div style={{ background: '#eef2ee', minHeight: '100vh', padding: '20px' }}>
-
             <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-                {/* Main blog card */}
                 <div style={{ background: 'white', border: '1px solid #0c2c1b', borderRadius: '12px', overflow: 'hidden', marginBottom: '20px' }}>
 
                     <div style={{ padding: '24px' }}>
@@ -343,9 +347,7 @@ const Blog = () => {
                     </div>
                 </div>
 
-                {/* Reactions + Comments card */}
                 <div style={{ background: 'white', border: '1px solid #0c2c1b', borderRadius: '12px', padding: '24px', marginBottom: '20px' }}>
-
                     <h2 style={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', margin: '0 0 12px' }}>Reactions</h2>
                     {blog.creatorId === userId && (
                         <p style={{ color: '#6e6e6e', fontSize: '14px', fontFamily: "'DM Sans', sans-serif" }}>You can't react to your own blog</p>
@@ -468,7 +470,6 @@ const Blog = () => {
                     ))}
                 </div>
 
-                {/* Similar blogs card */}
                 {similarBlogs.length > 0 && (
                     <div style={{ background: 'white', border: '1px solid #0c2c1b', borderRadius: '12px', padding: '24px', marginBottom: '20px' }}>
                         <h2 style={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', margin: '0 0 16px' }}>

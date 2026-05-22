@@ -101,6 +101,10 @@ const EditBlog = () => {
             blogData.series = series
         }
 
+        if (title.length > 128) { setErrorFlag(true); setErrorMessage("Title must be 128 characters or less"); return }
+        if (description.length > 1024) { setErrorFlag(true); setErrorMessage("Description must be 1024 characters or less"); return }
+        if (series.length > 64) { setErrorFlag(true); setErrorMessage("Series must be 64 characters or less"); return }
+
         axios.patch('http://localhost:4941/api/v1/blogs/' + id, blogData, {
             headers: { 'X-Authorization': authToken }
         })
@@ -122,27 +126,9 @@ const EditBlog = () => {
     }
 
     return (
-        <div style={{
-            minHeight: 'calc(100vh - 64px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: '#eef2ee',
-            padding: '40px 0'
-        }}>
-            <Paper elevation={0} style={{
-                padding: "32px",
-                width: "600px",
-                border: '1px solid #0c2c1b',
-                borderRadius: '12px'
-            }}>
-                <h1 style={{
-                    textAlign: 'center',
-                    color: '#0c2c1b',
-                    fontFamily: "'DM Sans', sans-serif",
-                    margin: '0 0 24px 0',
-                    fontSize: '28px'
-                }}>
+        <div style={{ minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eef2ee', padding: '40px 0' }}>
+            <Paper elevation={0} style={{ padding: "32px", width: "600px", border: '1px solid #0c2c1b', borderRadius: '12px' }}>
+                <h1 style={{ textAlign: 'center', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif", margin: '0 0 24px 0', fontSize: '28px' }}>
                     Edit Blog
                 </h1>
 
@@ -153,19 +139,10 @@ const EditBlog = () => {
                     </Alert>
                 }
 
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '16px',
-                    marginTop: '16px'
-                }}>
+                <div style={{  display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}>
 
                     <div>
-                        <p style={{
-                            margin: '0 0 8px 0',
-                            color: '#0c2c1b',
-                            fontFamily: "'DM Sans', sans-serif"
-                        }}>
+                        <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>
                             Title*
                         </p>
 
@@ -179,53 +156,27 @@ const EditBlog = () => {
                     </div>
 
                     <div>
-                        <p style={{
-                            margin: '0 0 8px 0',
-                            color: '#0c2c1b',
-                            fontFamily: "'DM Sans', sans-serif"
-                        }}>
+                        <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>
                             Description*
                         </p>
 
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            style={{
-                                padding: '14px',
-                                fontSize: '16px',
-                                borderRadius: '6px',
-                                border: '1px solid #0c2c1b',
-                                fontFamily: "'DM Sans', sans-serif",
-                                width: '100%',
-                                boxSizing: 'border-box',
-                                minHeight: '150px',
-                                color: '#0c2c1b',
-                                outline: 'none',
-                                resize: 'none',
-                            }}
+                            style={{ padding: '14px', fontSize: '16px', borderRadius: '6px', border: '1px solid #0c2c1b', fontFamily: "'DM Sans', sans-serif", width: '100%', boxSizing: 'border-box', minHeight: '150px', color: '#0c2c1b', outline: 'none', resize: 'none' }}
                             className="green-placeholder"
                         />
                     </div>
 
                     <div>
-                        <p style={{
-                            margin: '0 0 8px 0',
-                            color: '#0c2c1b',
-                            fontFamily: "'DM Sans', sans-serif"
-                        }}>
+                        <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>
                             City*
                         </p>
 
                         <select
                             value={cityId}
                             onChange={(e) => setCityId(Number(e.target.value))}
-                            style={{
-                                ...inputStyle,
-                                display: 'block',
-                                color: '#0c2c1b',
-                                background: 'white',
-                            }}
-                        >
+                            style={{ ...inputStyle, display: 'block', color: '#0c2c1b', background: 'white' }}>
                             <option value="">Select a city</option>
 
                             {cities.map((city: any) => (
@@ -237,11 +188,7 @@ const EditBlog = () => {
                     </div>
 
                     <div>
-                        <p style={{
-                            margin: '0 0 8px 0',
-                            color: '#0c2c1b',
-                            fontFamily: "'DM Sans', sans-serif"
-                        }}>
+                        <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>
                             Categories*
                         </p>
 
@@ -253,34 +200,12 @@ const EditBlog = () => {
                                 onChange={(e) => setSelectedCategoryIds(e.target.value as number[])}
                                 input={<OutlinedInput />}
                                 renderValue={(selected: any) => {
-                                    if (selected.length === 0) return "Select categories"
+                                    if (selected.length === 0) {
+                                        return "Select categories"
+                                    }
                                     return `${selected.length} selected`
                                 }}
-                                sx={{
-                                    color: '#0c2c1b',
-
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#0c2c1b',
-                                    },
-
-                                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#0c2c1b',
-                                    },
-
-                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#0c2c1b',
-                                    },
-
-                                    '& .MuiSvgIcon-root': {
-                                        color: '#0c2c1b',
-                                    },
-
-                                    '& .MuiSelect-select': {
-                                        textAlign: 'left',
-                                        display: 'block',
-                                        color: '#0c2c1b',
-                                    }
-                                }}
+                                sx={{ color: '#0c2c1b', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '& .MuiSvgIcon-root': { color: '#0c2c1b' }, '& .MuiSelect-select': { textAlign: 'left', display: 'block', color: '#0c2c1b' } }}
                             >
                                 {categories.map((category: any) => (
                                     <MenuItem
@@ -289,12 +214,7 @@ const EditBlog = () => {
                                     >
                                         <Checkbox
                                             checked={selectedCategoryIds.includes(category.categoryId)}
-                                            sx={{
-                                                color: '#0c2c1b',
-                                                '&.Mui-checked': {
-                                                    color: '#0c2c1b',
-                                                }
-                                            }}
+                                            sx={{ color: '#0c2c1b', '&.Mui-checked': { color: '#0c2c1b' } }}
                                         />
 
                                         <ListItemText primary={category.name} />
@@ -306,11 +226,7 @@ const EditBlog = () => {
 
                     {originalSeries !== null ? (
                         <div>
-                            <p style={{
-                                margin: '0 0 8px 0',
-                                color: '#0c2c1b',
-                                fontFamily: "'DM Sans', sans-serif"
-                            }}>
+                            <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>
                                 Series (cannot be changed once set)
                             </p>
 
@@ -318,20 +234,12 @@ const EditBlog = () => {
                                 type="text"
                                 value={originalSeries}
                                 disabled
-                                style={{
-                                    ...inputStyle,
-                                    background: '#f5f5f5',
-                                    color: '#888'
-                                }}
+                                style={{ ...inputStyle, background: '#f5f5f5', color: '#6e6e6e' }}
                             />
                         </div>
                     ) : (
                         <div>
-                            <p style={{
-                                margin: '0 0 8px 0',
-                                color: '#0c2c1b',
-                                fontFamily: "'DM Sans', sans-serif"
-                            }}>
+                            <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>
                                 Series (optional)
                             </p>
 
@@ -347,23 +255,11 @@ const EditBlog = () => {
                     )}
 
                     <div style={{ textAlign: 'center' }}>
-                        <p style={{
-                            margin: '0 0 8px 0',
-                            color: '#0c2c1b',
-                            fontFamily: "'DM Sans', sans-serif"
-                        }}>
+                        <p style={{ margin: '0 0 8px 0', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>
                             Image*
                         </p>
 
-                        <label style={{
-                            cursor: 'pointer',
-                            color: '#0c2c1b',
-                            border: '1px solid #0c2c1b',
-                            borderRadius: '6px',
-                            padding: '8px 16px',
-                            fontFamily: "'DM Sans', sans-serif",
-                            fontSize: '14px'
-                        }}>
+                        <label style={{ cursor: 'pointer', color: '#0c2c1b', border: '1px solid #0c2c1b', borderRadius: '6px', padding: '8px 16px', fontFamily: "'DM Sans', sans-serif", fontSize: '14px' }}>
                             Choose file
 
                             <input
@@ -375,23 +271,11 @@ const EditBlog = () => {
                         </label>
 
                         {image &&
-                            <p style={{
-                                color: '#0c2c1b',
-                                fontSize: '13px',
-                                marginTop: '4px'
-                            }}>
-                                {image.name}
-                            </p>
+                            <p style={{ color: '#0c2c1b', fontSize: '13px', marginTop: '4px' }}>{image.name}</p>
                         }
 
                         {!image &&
-                            <p style={{
-                                color: '#6e6e6e',
-                                fontSize: '13px',
-                                marginTop: '4px'
-                            }}>
-                                No file chosen
-                            </p>
+                            <p style={{ color: '#6e6e6e', fontSize: '13px', marginTop: '4px' }}>No file chosen</p>
                         }
                         <p style={{ color: '#6e6e6e', fontSize: '12px', margin: '0px 0 0', fontFamily: "'DM Sans', sans-serif" }}>Accepted formats: JPEG, PNG, GIF</p>
                     </div>
