@@ -113,7 +113,7 @@ const Register = () => {
                         placeholder="First Name*"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        className="green-placeholder"
+                        className="dark-placeholder"
                         style={inputStyle}
                     />
                     <input
@@ -121,7 +121,7 @@ const Register = () => {
                         placeholder="Last Name*"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="green-placeholder"
+                        className="dark-placeholder"
                         style={inputStyle}
                     />
                     <input
@@ -129,7 +129,7 @@ const Register = () => {
                         placeholder="Email*"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="green-placeholder"
+                        className="dark-placeholder"
                         style={inputStyle}
                     />
                     <div style={{ position: 'relative' }}>
@@ -138,7 +138,7 @@ const Register = () => {
                             placeholder="Password (min 6 characters)*"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="green-placeholder"
+                            className="dark-placeholder"
                             style={inputStyle}
                         />
                         <VisibilityIcon

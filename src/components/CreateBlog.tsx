@@ -131,7 +131,7 @@ const CreateBlog = () => {
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             style={inputStyle}
-                            className="green-placeholder"
+                            className="dark-placeholder"
                         />
                     </div>
                     <div>
@@ -141,7 +141,7 @@ const CreateBlog = () => {
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             style={{ padding: '14px', fontSize: '16px', borderRadius: '6px', border: '1px solid #0c2c1b', fontFamily: "'DM Sans', sans-serif", width: '100%', boxSizing: 'border-box', minHeight: '150px', color: '#0c2c1b', outline: 'none', resize: 'none' }}
-                            className="green-placeholder"
+                            className="dark-placeholder"
                         />
                     </div>
                     <div>
@@ -199,7 +199,7 @@ const CreateBlog = () => {
                             value={series}
                             onChange={(e) => setSeries(e.target.value)}
                             style={inputStyle}
-                            className="green-placeholder"
+                            className="dark-placeholder"
                         />
                     </div>
                     <div style={{ textAlign: 'center' }}>

@@ -247,7 +247,7 @@ const Blogs = () => {
                         value={numReactions}
                         min={0}
                         onChange={handleNumReactionsChange}
-                        className="green-placeholder"
+                        className="dark-placeholder"
                         style={{ height: '38px', padding: '0 10px', fontSize: '14px', borderRadius: '6px', border: '1px solid #0c2c1b', fontFamily: "'DM Sans', sans-serif", width: '130px', color: '#0c2c1b', cursor: 'pointer' }}
                     />
 
@@ -257,7 +257,7 @@ const Blogs = () => {
                             placeholder="Search blogs..."
                             value={searchQuery}
                             onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1) }}
-                            className="green-placeholder"
+                            className="dark-placeholder"
                             style={{ border: 'none', outline: 'none', fontSize: '14px', fontFamily: "'DM Sans', sans-serif", flex: 1, background: 'transparent', color: '#0c2c1b' }}
                         />
                         <SearchIcon style={{ color: '#0c2c1b', fontSize: '20px', marginRight: '8px' }} />

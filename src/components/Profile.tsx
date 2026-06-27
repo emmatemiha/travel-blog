@@ -376,7 +376,7 @@ const Profile = () => {
                             </p>
                             <input type="text" value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)} style={inputStyle}
-                                className="green-placeholder"
+                                className="dark-placeholder"
                             />
                         </div>
                         <div>
@@ -384,7 +384,7 @@ const Profile = () => {
                                 Last name
                             </p>
                             <input type="text" value={lastName}
-                                className="green-placeholder"
+                                className="dark-placeholder"
                                 onChange={(e) => setLastName(e.target.value)} style={inputStyle} />
                         </div>
                         <div>
@@ -392,7 +392,7 @@ const Profile = () => {
                                 Email
                             </p>
                             <input type="email" value={email}
-                                className="green-placeholder"
+                                className="dark-placeholder"
                                 onChange={(e) => setEmail(e.target.value)} style={inputStyle} />
                         </div>
                         <div>
@@ -406,7 +406,7 @@ const Profile = () => {
                                     value={currentPassword}
                                     onChange={(e) => setCurrentPassword(e.target.value)}
                                     style={inputStyle}
-                                    className="green-placeholder"
+                                    className="dark-placeholder"
                                 />
                                 <VisibilityIcon
                                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
@@ -425,7 +425,7 @@ const Profile = () => {
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
                                     style={inputStyle}
-                                    className="green-placeholder"
+                                    className="dark-placeholder"
                                 />
                                 <VisibilityIcon
                                     onClick={() => setShowNewPassword(!showNewPassword)}
@@ -438,7 +438,7 @@ const Profile = () => {
                                 Profile picture
                             </p>
                             <input type="file" accept="image/jpeg, image/png, image/gif"
-                                className="green-placeholder"
+                                className="dark-placeholder"
                                 onChange={(e) => setProfilePic(e.target.files ? e.target.files[0] : null)} />
                             <p style={{ color: '#6e6e6e', fontSize: '12px', margin: '4px 0 0', fontFamily: "'DM Sans', sans-serif" }}>Accepted formats: JPEG, PNG, GIF</p>
                         </div>

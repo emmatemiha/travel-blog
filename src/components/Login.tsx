@@ -73,7 +73,7 @@ const Login = () => {
                         placeholder="Email*"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="green-placeholder"
+                        className="dark-placeholder"
                         style={inputStyle}
                     />
                     <div style={{ position: 'relative' }}>
@@ -82,7 +82,7 @@ const Login = () => {
                             placeholder="Password*"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="green-placeholder"
+                            className="dark-placeholder"
                             style={inputStyle}
                         />
                         <VisibilityIcon
