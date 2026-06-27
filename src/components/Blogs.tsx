@@ -1,8 +1,9 @@
 import axios from 'axios';
 import React from "react";
-import { Link } from 'react-router-dom';
-import { Alert, AlertTitle, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Button, Pagination } from "@mui/material";
+import { useNavigate } from 'react-router-dom';
+import { Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Button, Pagination } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
+import defaultPfp from '../assets/default_pfp.png'
 
 const Blogs = () => {
     const [blogs, setBlogs] = React.useState<Array<any>>([])
@@ -18,6 +19,7 @@ const Blogs = () => {
     const pageSize = 9
     const [count, setCount] = React.useState(0) // to keep track of pagination
     const [numReactions, setNumReactions] = React.useState("")
+    const navigate = useNavigate()
 
     const handleNumReactionsChange = (e: any) => {
         setNumReactions(e.target.value)
@@ -40,21 +42,10 @@ const Blogs = () => {
             startIndex: (currentPage - 1) * pageSize
         }
 
-        if (searchQuery !== "") {
-            params.q = searchQuery
-        }
-
-        if (selectedCityIds.length > 0) {
-            params.cityIds = selectedCityIds
-        }
-
-        if (selectedCategoryIds.length > 0) {
-            params.categoryIds = selectedCategoryIds
-        }
-
-        if (numReactions !== "") {
-            params.numReactions = Number(numReactions)
-        }
+        if (searchQuery !== "") params.q = searchQuery
+        if (selectedCityIds.length > 0) params.cityIds = selectedCityIds
+        if (selectedCategoryIds.length > 0) params.categoryIds = selectedCategoryIds
+        if (numReactions !== "") params.numReactions = Number(numReactions)
 
         axios.get('http://localhost:4941/api/v1/blogs', { params })
             .then((response) => {
@@ -71,8 +62,6 @@ const Blogs = () => {
     const getCities = () => {
         axios.get('http://localhost:4941/api/v1/blogs/cities')
             .then((response) => {
-                setErrorFlag(false)
-                setErrorMessage("")
                 setCities(response.data)
             }, (error) => {
                 setErrorFlag(true)
@@ -83,8 +72,6 @@ const Blogs = () => {
     const getCategories = () => {
         axios.get('http://localhost:4941/api/v1/blogs/categories')
             .then((response) => {
-                setErrorFlag(false)
-                setErrorMessage("")
                 setCategories(response.data)
             }, (error) => {
                 setErrorFlag(true)
@@ -94,72 +81,114 @@ const Blogs = () => {
 
     const getCityName = (cityId: number) => {
         const city = cities.find((c: any) => c.cityId === cityId)
-        if (city) {
-            return city.name
-        } else {
-            return cityId
-        }
+        return city ? city.name : cityId
     }
 
     const getCategoryNames = (categoryIds: number[]) => {
         const names = categoryIds.map((id: number) => {
             const category = categories.find((c: any) => c.categoryId === id)
-            if (category) {
-                return category.name
-            } else {
-                return id
-            }
+            return category ? category.name : id
         })
         return names.join(', ')
     }
 
+    {/*reusable sx's :)*/}
+    const selectSx = {
+        fontFamily: "'Lato', sans-serif",
+        fontSize: '13px',
+        height: '34px',
+        color: '#9aba9a',
+        background: '#1a2e1c',
+        '& .MuiOutlinedInput-notchedOutline': { borderColor: '#2a4a2e' },
+        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#4a7a4e' },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#5a8a5e' },
+        '& .MuiSvgIcon-root': { color: '#6a9a6e' }
+    }
+
+    const menuItemSx = {
+        fontFamily: "'Lato', sans-serif",
+        fontSize: '13px',
+        color: '#e8e0d0',
+        background: '#111e13',
+        '&:hover': { background: '#1a2e1c' },
+        '&.Mui-selected': { background: '#1a2e1c' },
+        '&.Mui-selected:hover': { background: '#1e3320' },
+        padding: '6px 12px'
+    }
+
+    const menuProps = {
+        slotProps: {
+            paper: {
+                sx: {
+                    background: '#111e13',
+                    border: '1px solid #1e3320',
+                    borderRadius: '4px',
+                    boxShadow: '0 8px 24px #00000080',
+                    '& .MuiList-root': { padding: 0 }
+                }
+            }
+        }
+    }
+
     const blog_rows = () => {
         return blogs.map((row: any) =>
-            <div key={row.blogId} style={{ background: 'white', borderRadius: '12px', border: '1px solid #0c2c1b', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                <div style={{ padding: '16px', textAlign: 'center' }}>
-                    <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '28px', color: '#0c2c1b', fontWeight: 700, textDecoration: 'underline', marginBottom: '12px', wordBreak: 'break-word', lineHeight: '1.1' }}>
-                        {row.title}
-                    </div>
-                    <div style={{ fontSize: '14px', color: '#0c2c1b', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', wordBreak: 'break-word' }}>
-                        <img
-                            src={'http://localhost:4941/api/v1/users/' + row.creatorId + '/image'}
-                            alt="Creator"
-                            style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b' }}
-                            onError={(e: any) => { e.target.src = '/src/assets/default_pfp.png' }}
-                        />
-                        By {row.creatorFirstName} {row.creatorLastName}
-                    </div>
-                    <div style={{ fontSize: '14px', color: '#0c2c1b' }}>
-                        {new Date(row.creationDate).toLocaleDateString('en-NZ')}
+            <div
+                key={row.blogId}
+                onClick={() => navigate('/blogs/' + row.blogId)}
+                style={{ background: '#111e13', display: 'flex', flexDirection: 'column', overflow: 'hidden', cursor: 'pointer', transition: 'background 0.2s' }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = '#162318')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = '#111e13')}
+            >
+                {/*cover image*/}
+                <div style={{ position: 'relative', height: '160px', background: '#1a3320', overflow: 'hidden' }}>
+                    <img
+                        src={'http://localhost:4941/api/v1/blogs/' + row.blogId + '/image'}
+                        alt={row.title}
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                    {/*city label over image*/}
+                    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px 16px 8px', background: 'linear-gradient(to top, #0a1209cc 0%, transparent 100%)' }}>
+                        <span style={{ fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#a8c8a0', fontFamily: "'Lato', sans-serif" }}>
+                            {getCityName(row.cityId)}
+                        </span>
                     </div>
                 </div>
 
-                <img
-                    src={'http://localhost:4941/api/v1/blogs/' + row.blogId + '/image'}
-                    alt={row.title}
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                    style={{ width: '100%', height: '160px', objectFit: 'cover' }}
-                />
+                {/*blog card text section*/}
+                <div style={{ padding: '14px 16px', flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '16px', color: '#e0d8c8', lineHeight: 1.35, fontWeight: 400 }}>
+                        {row.title}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <img
+                            src={'http://localhost:4941/api/v1/users/' + row.creatorId + '/image'}
+                            alt="Creator"
+                            style={{ width: '18px', height: '18px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #2a4a2e', flexShrink: 0 }}
+                            onError={(e: any) => { e.target.src = defaultPfp }}
+                        />
+                        <span style={{ fontSize: '12px', color: '#7a9e7e', fontFamily: "'Lato', sans-serif", marginBottom: '2px' }}>
+                            {row.creatorFirstName} {row.creatorLastName}
+                        </span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                        {getCategoryNames(row.categoryIds).split(', ').map((category: string) => (
+                            <span key={category} style={{ fontSize: '10px', color: '#6a8e6e', border: '1px solid #2a4a2e', padding: '2px 7px', borderRadius: '10px', letterSpacing: '0.5px', textTransform: 'uppercase', fontFamily: "'Lato', sans-serif" }}>
+                                {category}
+                            </span>
+                        ))}
+                    </div>
+                </div>
 
-                <div style={{ padding: '12px 16px 16px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
-                    <div style={{ fontSize: '14px', color: '#0c2c1b' }}>
-                        📍 {getCityName(row.cityId)}
-                    </div>
-                    <div style={{ fontSize: '14px', color: '#0c2c1b' }}>
-                        {getCategoryNames(row.categoryIds)}
-                    </div>
-                    <div style={{ fontSize: '14px', color: '#0c2c1b' }}>
-                        ♡ {row.numReactions} {row.numReactions === 1 ? 'reaction' : 'reactions'}
-                    </div>
-                    <Button
-                        variant="contained"
-                        size="small"
-                        component={Link}
-                        to={"/blogs/" + row.blogId}
-                        sx={{ backgroundColor: "#0c2c1b", "&:hover": { backgroundColor: "#071a10" } }}
-                    >
-                        View
-                    </Button>
+                {/*bottom of card with date and reactions*/}
+                <div style={{ padding: '8px 16px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #1a2e1c' }}>
+                    <span style={{ fontSize: '11px', color: '#5a7a5e', fontFamily: "'Lato', sans-serif" }}>
+                        {new Date(row.creationDate).toLocaleDateString('en-NZ')}
+                    </span>
+                    <span style={{ fontSize: '11px', color: '#6a8e6e', fontFamily: "'Lato', sans-serif", display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span>♡</span>
+                        <span>{row.numReactions} {row.numReactions === 1 ? 'reaction' : 'reactions'}</span>
+                    </span>
                 </div>
             </div>
         )
@@ -167,24 +196,51 @@ const Blogs = () => {
 
     if (errorFlag) {
         return (
-            <div>
-                <h1>Blogs</h1>
-                {errorFlag &&
-                    <Alert severity="error">
-                        <AlertTitle>Error</AlertTitle>
-                        {errorMessage}
-                    </Alert>}
+            <div style={{ background: '#0f1a12', minHeight: '100vh', padding: '40px', color: '#e8e0d0', fontFamily: "'Lato', sans-serif" }}>
+                <p>Error: {errorMessage}</p>
             </div>
         )
     } else {
         return (
-            <div style={{ background: '#eef2ee', minHeight: '100vh', padding: '20px' }}>
-                <div style={{ background: 'white', borderRadius: '10px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '20px', border: '1px solid #0c2c1b' }}>
-                    <span style={{ fontSize: '14px', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>Sort by:</span>
+            <div style={{ background: '#0f1a12', minHeight: '100vh' }}>
+                
+                {/*hero*/}
+                <div
+                    style={{ position: 'relative', height: '240px', background: 'linear-gradient(to bottom, #0f2015 0%, #0a1209 100%)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderBottom: '1px solid #1e3320' }}>
+                        
+                    <div style={{ position: 'relative', zIndex: 1, padding: '0 40px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '9px', letterSpacing: '4px', color: '#7aba7a', textTransform: 'uppercase', marginBottom: '10px', fontFamily: "'Lato', sans-serif" }}>
+                            Exploring New Zealand
+                        </div>
+                        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '38px', color: '#f0e8d8', fontWeight: 400, margin: '0 0 4px', lineHeight: 1.2 }}>
+                            Stories from
+                        </h1>
+
+                        <h1 style={{ color: '#a8c87a', fontStyle: 'italic', fontFamily: "'Playfair Display', serif", fontSize: '38px', fontWeight: 400, margin: '0 0 14px 0', lineHeight: 1.2 }}>
+                            the land of the long white cloud
+                        </h1>
+                        
+                        <div style={{ display: 'flex', gap: '28px', justifyContent: 'center' }}>
+                            <div>
+                                <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '18px', color: '#c8e0b0' }}>{count}</div>
+                                <div style={{ fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: '#5a8a5e', fontFamily: "'Lato', sans-serif" }}>Stories</div>
+                            </div>
+                            <div>
+                                <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '18px', color: '#c8e0b0' }}>{cities.length}</div>
+                                <div style={{ fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: '#5a8a5e', fontFamily: "'Lato', sans-serif" }}>Destinations</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {/*search filters*/}
+                <div style={{ background: '#0d1810', borderBottom: '1px solid #1e3320', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '9px', color: '#4a6a4e', fontFamily: "'Lato', sans-serif", letterSpacing: '2px', textTransform: 'uppercase' }}>Sort</span>
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
-                        style={{ height: '38px', padding: '0 10px', fontSize: '14px', borderRadius: '6px', border: '1px solid #0c2c1b', fontFamily: "'DM Sans', sans-serif", background: 'white', color: '#0c2c1b', cursor: 'pointer' }}>
+                        style={{ height: '34px', padding: '0 10px', fontSize: '13px', borderRadius: '4px', border: '1px solid #2a4a2e', fontFamily: "'Lato', sans-serif", background: '#1a2e1c', color: '#9aba9a', cursor: 'pointer', outline: 'none',  accentColor: '#2d5a30' }}>
                         <option value="ALPHABETICAL_ASC">Title A-Z</option>
                         <option value="ALPHABETICAL_DESC">Title Z-A</option>
                         <option value="REACTIONS_ASC">Reactions ascending</option>
@@ -192,50 +248,55 @@ const Blogs = () => {
                         <option value="CREATED_DESC">Newest first</option>
                         <option value="CREATED_ASC">Oldest first</option>
                     </select>
+                    
+                    <div style={{ width: '1px', height: '20px', background: '#1e3320', margin: '0 4px' }} />
+                    <span style={{ fontSize: '9px', color: '#4a6a4e', fontFamily: "'Lato', sans-serif", letterSpacing: '2px', textTransform: 'uppercase' }}>Filter</span>
 
-                    <span style={{ fontSize: '14px', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif" }}>Filter by:</span>
-
-                    <FormControl size="small" style={{ minWidth: 140 }}>
-                        <InputLabel style={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', fontSize: '14px' }}>City</InputLabel>
+                    <FormControl size="small" style={{ minWidth: 120 }}>
+                        <InputLabel sx={{ fontFamily: "'Lato', sans-serif", color: '#6a9a6e', fontSize: '13px', '&.Mui-focused': { color: '#8aba8e' } }}>City</InputLabel>
                         <Select
                             multiple
                             value={selectedCityIds}
                             onChange={(e) => { setSelectedCityIds(e.target.value as number[]); setCurrentPage(1) }}
                             input={<OutlinedInput label="City" />}
                             renderValue={(selected) => `${selected.length} selected`}
-                            sx={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', height: '38px', color: '#0c2c1b',
-                                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '& .MuiSvgIcon-root': { color: '#0c2c1b' } }}>
+                            MenuProps={menuProps}
+                            sx={selectSx}>
                             {cities.map((city: any) => (
-                                <MenuItem key={city.cityId} value={city.cityId}>
+                                <MenuItem key={city.cityId} value={city.cityId} sx={menuItemSx}>
                                     <Checkbox
                                         checked={selectedCityIds.includes(city.cityId)}
                                         size="small"
-                                        sx={{ color: '#0c2c1b', '&.Mui-checked': { color: '#0c2c1b' } }}
+                                        sx={{ color: '#4a7a4e', '&.Mui-checked': { color: '#7aba7a' } }}
                                     />
-                                    <ListItemText primary={city.name} />
+                                    <ListItemText primary={city.name}
+                                        slotProps={{ primary: { style: { fontFamily: "'Lato', sans-serif", fontSize: '13px', color: '#e8e0d0' } } }}
+                                    />
                                 </MenuItem>
                             ))}
                         </Select>
                     </FormControl>
 
-                    <FormControl size="small" style={{ minWidth: 160 }}>
-                        <InputLabel style={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', fontSize: '14px' }}>Category</InputLabel>
+                    <FormControl size="small" style={{ minWidth: 140 }}>
+                        <InputLabel sx={{ fontFamily: "'Lato', sans-serif", color: '#6a9a6e', fontSize: '13px', '&.Mui-focused': { color: '#8aba8e' } }}>Category</InputLabel>
                         <Select
                             multiple
                             value={selectedCategoryIds}
                             onChange={(e) => { setSelectedCategoryIds(e.target.value as number[]); setCurrentPage(1) }}
                             input={<OutlinedInput label="Category" />}
                             renderValue={(selected) => `${selected.length} selected`}
-                            sx={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', height: '38px', color: '#0c2c1b',
-                               '& .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#0c2c1b' }, '& .MuiSvgIcon-root': { color: '#0c2c1b' } }}>
+                            MenuProps={menuProps}
+                            sx={selectSx}>
                             {categories.map((category: any) => (
-                                <MenuItem key={category.categoryId} value={category.categoryId}>
+                                <MenuItem key={category.categoryId} value={category.categoryId} sx={menuItemSx}>
                                     <Checkbox
                                         checked={selectedCategoryIds.includes(category.categoryId)}
                                         size="small"
-                                        sx={{ color: '#0c2c1b', '&.Mui-checked': { color: '#0c2c1b' } }}
+                                        sx={{ color: '#4a7a4e', '&.Mui-checked': { color: '#7aba7a' } }}
                                     />
-                                    <ListItemText primary={category.name} />
+                                    <ListItemText primary={category.name}
+                                        slotProps={{ primary: { style: { fontFamily: "'Lato', sans-serif", fontSize: '13px', color: '#e8e0d0' } } }}
+                                    />
                                 </MenuItem>
                             ))}
                         </Select>
@@ -248,27 +309,36 @@ const Blogs = () => {
                         min={0}
                         onChange={handleNumReactionsChange}
                         className="dark-placeholder"
-                        style={{ height: '38px', padding: '0 10px', fontSize: '14px', borderRadius: '6px', border: '1px solid #0c2c1b', fontFamily: "'DM Sans', sans-serif", width: '130px', color: '#0c2c1b', cursor: 'pointer' }}
+                        style={{ height: '34px', padding: '0 10px', fontSize: '13px', borderRadius: '4px', border: '1px solid #2a4a2e', fontFamily: "'Lato', sans-serif", width: '120px', color: '#9aba9a', background: '#1a2e1c', outline: 'none' }}
                     />
 
-                    <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #0c2c1b', borderRadius: '6px', height: '38px', paddingLeft: '10px', background: 'white', flex: 1, minWidth: '160px' }}>
+                    <div style={{ width: '1px', height: '20px', background: '#1e3320', margin: '0 4px' }} />
+
+                    <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #2a4a2e', borderRadius: '4px', height: '34px', paddingLeft: '10px', background: '#1a2e1c', flex: 1, minWidth: '160px' }}>
                         <input
                             type="text"
-                            placeholder="Search blogs..."
+                            placeholder="Search stories..."
                             value={searchQuery}
                             onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1) }}
                             className="dark-placeholder"
-                            style={{ border: 'none', outline: 'none', fontSize: '14px', fontFamily: "'DM Sans', sans-serif", flex: 1, background: 'transparent', color: '#0c2c1b' }}
+                            style={{ border: 'none', outline: 'none', fontSize: '13px', fontFamily: "'Lato', sans-serif", flex: 1, background: 'transparent', color: '#9aba9a' }}
                         />
-                        <SearchIcon style={{ color: '#0c2c1b', fontSize: '20px', marginRight: '8px' }} />
+                        <SearchIcon style={{ color: '#4a6a4e', fontSize: '18px', marginRight: '8px' }} />
                     </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+                {/*section label*/}
+                <div style={{ padding: '14px 20px 6px', fontSize: '9px', letterSpacing: '3px', textTransform: 'uppercase', color: '#4a6a4e', fontFamily: "'Lato', sans-serif" }}>
+                    Latest stories
+                </div>
+
+                {/*blog grid!*/}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#1a2e1c' }}>
                     {blog_rows()}
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                {/*pagination*/}
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
                     <Pagination
                         count={Math.ceil(count / pageSize)}
                         page={currentPage}
@@ -276,7 +346,11 @@ const Blogs = () => {
                         shape="rounded"
                         showFirstButton
                         showLastButton
-                        sx={{ '& .MuiPaginationItem-root': { color: '#0c2c1b' }, '& .Mui-selected': { backgroundColor: '#0c2c1b !important', color: 'white' }, '& .Mui-selected:hover': { backgroundColor: '#071a10 !important' } }}
+                        sx={{
+                            '& .MuiPaginationItem-root': { color: '#e0d8c8', fontFamily: "'Lato', sans-serif" },
+                            '& .Mui-selected': { backgroundColor: '#2d5a30  !important', color: 'c8e8c0' },
+                            '& .Mui-selected:hover': { backgroundColor: '#3a6e3e  !important' }
+                        }}
                     />
                 </div>
             </div>
