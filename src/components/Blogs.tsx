@@ -236,7 +236,7 @@ const Blogs = () => {
                 
                 {/*search filters*/}
                 <div style={{ background: '#0d1810', borderBottom: '1px solid #1e3320', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '9px', color: '#4a6a4e', fontFamily: "'Lato', sans-serif", letterSpacing: '2px', textTransform: 'uppercase' }}>Sort</span>
+                    <span style={{ fontSize: '10px', color: '#4a6a4e', fontFamily: "'Lato', sans-serif", letterSpacing: '2px', textTransform: 'uppercase' }}>Sort</span>
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
@@ -250,7 +250,7 @@ const Blogs = () => {
                     </select>
                     
                     <div style={{ width: '1px', height: '20px', background: '#1e3320', margin: '0 4px' }} />
-                    <span style={{ fontSize: '9px', color: '#4a6a4e', fontFamily: "'Lato', sans-serif", letterSpacing: '2px', textTransform: 'uppercase' }}>Filter</span>
+                    <span style={{ fontSize: '10px', color: '#4a6a4e', fontFamily: "'Lato', sans-serif", letterSpacing: '2px', textTransform: 'uppercase' }}>Filter</span>
 
                     <FormControl size="small" style={{ minWidth: 120 }}>
                         <InputLabel sx={{ fontFamily: "'Lato', sans-serif", color: '#6a9a6e', fontSize: '13px', '&.Mui-focused': { color: '#8aba8e' } }}>City</InputLabel>
@@ -328,7 +328,7 @@ const Blogs = () => {
                 </div>
 
                 {/*section label*/}
-                <div style={{ padding: '14px 20px 6px', fontSize: '9px', letterSpacing: '3px', textTransform: 'uppercase', color: '#4a6a4e', fontFamily: "'Lato', sans-serif" }}>
+                <div style={{ padding: '14px 20px 6px', fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', color: '#4a6a4e', fontFamily: "'Lato', sans-serif" }}>
                     Latest stories
                 </div>
 
