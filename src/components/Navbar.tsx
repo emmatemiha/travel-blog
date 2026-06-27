@@ -104,7 +104,7 @@ const Navbar = () => {
                             </MenuItem>
                             <MenuItem
                                 onClick={logout}
-                                sx={{ fontFamily: "'DM Sans', sans-serif", color: '#e8e0d0', fontSize: '14px', '&:hover': { background: '#1a2e1c' }  }}>
+                                sx={{ fontFamily: "'Lato', sans-serif", color: '#e8e0d0', fontSize: '14px', '&:hover': { background: '#1a2e1c' }  }}>
                                 Log Out
                             </MenuItem>
                         </Menu>
