@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React from "react";
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Alert, AlertTitle, Button, Dialog, DialogContent, DialogContentText, DialogActions, Snackbar } from "@mui/material";
+import { Alert, Button, Dialog, DialogContent, DialogContentText, DialogActions, Snackbar } from "@mui/material";
 import { useAuthStore } from "../store";
 import defaultPfp from '../assets/default_pfp.png'
 
@@ -42,7 +42,6 @@ const Blog = () => {
         axios.get('http://localhost:4941/api/v1/blogs/' + id)
             .then((response) => {
                 setErrorFlag(false)
-                setErrorMessage("")
                 setBlog(response.data)
                 getSimilarBlogs(response.data)
             }, (error) => {
@@ -69,8 +68,6 @@ const Blog = () => {
     const getReactions = () => {
         axios.get('http://localhost:4941/api/v1/blogs/' + id + '/react')
             .then((response) => {
-                setErrorFlag(false)
-                setErrorMessage("")
                 setReactions(response.data)
                 getUserReaction(response.data)
             }, (error) => {
@@ -82,18 +79,12 @@ const Blog = () => {
     const getUserReaction = (reactionsData: Array<any>) => {
         if (!userId) return
         const found = reactionsData.find((r: any) => r.userId === userId)
-        if (found) {
-            setUserReaction(found.reaction)
-        } else {
-            setUserReaction(null)
-        }
+        setUserReaction(found ? found.reaction : null)
     }
 
     const getComments = () => {
         axios.get('http://localhost:4941/api/v1/blogs/' + id + '/comments')
             .then((response) => {
-                setErrorFlag(false)
-                setErrorMessage("")
                 setComments(response.data)
             }, (error) => {
                 setErrorFlag(true)
@@ -123,21 +114,13 @@ const Blog = () => {
 
     const getCityName = (cityId: number) => {
         const city = cities.find((c: any) => c.cityId === cityId)
-        if (city) {
-            return city.name
-        } else {
-            return cityId
-        }
+        return city ? city.name : cityId
     }
 
     const getCategoryNames = (categoryIds: number[]) => {
         const names = categoryIds.map((id: number) => {
             const category = categories.find((c: any) => c.categoryId === id)
-            if (category) {
-                return category.name
-            } else {
-                return id
-            }
+            return category ? category.name : id
         })
         return names.join(', ')
     }
@@ -157,9 +140,7 @@ const Blog = () => {
     }
 
     const getSimilarBlogs = (blogData: any) => {
-        const params: any = {
-            count: 10
-        }
+        const params = { count: 10 }
         axios.get('http://localhost:4941/api/v1/blogs', { params: { ...params, cityIds: [blogData.cityId] } })
             .then((response) => {
                 const cityBlogs = response.data.blogs
@@ -177,7 +158,7 @@ const Blog = () => {
                                     b.blogId !== currentBlogId &&
                                     self.findIndex((x: any) => x.blogId === b.blogId) === index
                                 )
-                                setSimilarBlogs(unique.slice(0, 6))
+                                setSimilarBlogs(unique.slice(0, 3))
                             })
                     })
             })
@@ -197,20 +178,11 @@ const Blog = () => {
             return
         }
         if (userReaction === reactionType) {
-            axios.delete('http://localhost:4941/api/v1/blogs/' + id + '/react', {
-                headers: { 'X-Authorization': authToken }
-            })
-                .then(() => {
-                    getReactions()
-                })
+            axios.delete('http://localhost:4941/api/v1/blogs/' + id + '/react', { headers: { 'X-Authorization': authToken } })
+                .then(() => getReactions())
         } else {
-            axios.post('http://localhost:4941/api/v1/blogs/' + id + '/react',
-                { reaction: reactionType },
-                { headers: { 'X-Authorization': authToken } }
-            )
-                .then(() => {
-                    getReactions()
-                })
+            axios.post('http://localhost:4941/api/v1/blogs/' + id + '/react', { reaction: reactionType }, { headers: { 'X-Authorization': authToken } })
+                .then(() => getReactions())      
         }
     }
 
@@ -219,14 +191,10 @@ const Blog = () => {
             navigate('/login')
             return
         }
-
         if (newComment.length > 512) { setErrorFlag(true); setErrorMessage("Comment must be 512 characters or less"); return }
-
         if (newComment === "") return
-        axios.post('http://localhost:4941/api/v1/blogs/' + id + '/comments',
-            { comment: newComment },
-            { headers: { 'X-Authorization': authToken } }
-        )
+
+        axios.post('http://localhost:4941/api/v1/blogs/' + id + '/comments', { comment: newComment }, { headers: { 'X-Authorization': authToken } })
             .then(() => {
                 setNewComment("")
                 getComments()
@@ -243,12 +211,9 @@ const Blog = () => {
         }
 
         if (replyText.length > 512) { setErrorFlag(true); setErrorMessage("Reply must be 512 characters or less"); return }
-
         if (replyText === "") return
-        axios.post('http://localhost:4941/api/v1/blogs/' + id + '/comments',
-            { comment: replyText, parentId: parentId },
-            { headers: { 'X-Authorization': authToken } }
-        )
+
+        axios.post('http://localhost:4941/api/v1/blogs/' + id + '/comments', { comment: replyText, parentId: parentId }, { headers: { 'X-Authorization': authToken } })
             .then(() => {
                 setReplyText("")
                 setReplyingTo(null)
@@ -259,25 +224,10 @@ const Blog = () => {
             })
     }
 
-    const handleDeleteDialogOpen = () => {
-        setOpenDeleteDialog(true)
-    }
-
-    const handleDeleteDialogClose = () => {
-        setOpenDeleteDialog(false)
-    }
-
-    const handleSnackClose = () => {
-        setSnackOpen(false)
-    }
-
     if (errorFlag) {
         return (
-            <div>
-                <Alert severity="error">
-                    <AlertTitle>Error</AlertTitle>
-                    {errorMessage}
-                </Alert>
+            <div style={{ background: '#0f1a12', minHeight: '100vh', padding: '40px', color: '#e8e0d0', fontFamily: "'Lato', sans-serif" }}>
+                <p>Error: {errorMessage}</p>
             </div>
         )
     }
@@ -287,160 +237,216 @@ const Blog = () => {
     }
 
     return (
-        <div style={{ background: '#eef2ee', minHeight: '100vh', padding: '20px' }}>
-            <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-                <div style={{ background: 'white', border: '1px solid #0c2c1b', borderRadius: '12px', overflow: 'hidden', marginBottom: '20px' }}>
+        <div style={{ background: '#0f1a12', minHeight: '100vh' }}>
 
-                    <div style={{ padding: '24px' }}>
-                        <div style={{ fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif", marginBottom: '8px' }}>
-                            📍 {getCityName(blog.cityId)} &nbsp;·&nbsp; {new Date(blog.creationDate).toLocaleDateString('en-NZ')}
+            {/*hero*/}
+            <div style={{ position: 'relative', height: '420px', background: '#0a1a0d', overflow: 'hidden' }}>
+                <img
+                    key={blog.blogId}
+                    src={'http://localhost:4941/api/v1/blogs/' + id + '/image'}
+                    alt="Blog cover image"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    onError={(e: any) => { e.target.style.display = 'none' }}
+                />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #0a1209f2 0%, #0a120966) 60%, transparent 100%)' }} />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '32px 40px' }}>
+                    <div style={{ maxWidth: '760px', margin: '0 auto' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#a8c8a0', fontFamily: "'Lato', sans-serif" }}>
+                                {getCityName(blog.cityId)}
+                            </span>
+                            <span style={{ color: '#4a6a4e', fontSize: '10px' }}>·</span>
+                            <span style={{ fontSize: '10px', letterSpacing: '1px', color: '#5a7a5e', fontFamily: "'Lato', sans-serif" }}>
+                                {new Date(blog.creationDate).toLocaleDateString('en-NZ')}
+                            </span>
+                            {blog.series && <>
+                                <span style={{ color: '#4a6a4e', fontSize: '10px' }}>·</span>
+                                <span style={{ fontSize: '10px', letterSpacing: '1px', color: '#7aba7a', fontFamily: "'Lato', sans-serif", textTransform: 'uppercase' }}>
+                                    {blog.series}
+                                </span>
+                            </>}
                         </div>
-
-                        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", color: '#0c2c1b', fontSize: '36px', margin: '0 0 12px', fontWeight: 700, textDecoration: 'underline', marginBottom: '20px', wordBreak: 'break-word', lineHeight: '1.1' }}>
+                        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '40px', color: '#f0e8d8', fontWeight: 400, margin: 0, lineHeight: 1.2, wordBreak: 'break-word' }}>
                             {blog.title}
                         </h1>
+                    </div>
+                </div>
+            </div>
 
+            {/*blog content*/}
+            <div style={{ maxWidth: '760px', margin: '0 auto', padding: '32px 24px' }}>
                         <div
                             onClick={() => navigate('/profile/' + blog.creatorId)}
-                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '20px', cursor: 'pointer' }}>
+                            style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px', cursor: 'pointer' }}>
                             <img
                                 src={'http://localhost:4941/api/v1/users/' + blog.creatorId + '/image'}
                                 alt="Creator"
-                                style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b' }}
+                                style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #2a4a2e' }}
                                 onError={(e: any) => { e.target.src = defaultPfp }}
                             />
-                            <span style={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', fontSize: '15px', wordBreak: 'break-word' }}>
-                                By {blog.creatorFirstName} {blog.creatorLastName}
+                            <span style={{ fontFamily: "'Lato', sans-serif", color: '#c8d8c0', fontSize: '13px', wordBreak: 'break-word' }}>
+                                {blog.creatorFirstName} {blog.creatorLastName}
                             </span>
                         </div>
 
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '16px', lineHeight: '1.8', color: '#0c2c1b', marginBottom: '20px', wordBreak: 'break-word' }}>
+                        <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '16px', lineHeight: '1.9', color: '#c8d0c0', marginBottom: '28px', wordBreak: 'break-word' }}>
                             {blog.description}
                         </p>
 
-                        <img
-                            key={blog.blogId}
-                            src={'http://localhost:4941/api/v1/blogs/' + id + '/image'}
-                            alt="Blog cover"
-                            style={{ width: '100%', maxHeight: '900px', objectFit: 'cover', display: 'block', marginBottom: '28px' }}
-                            onError={(e: any) => { e.target.style.display = 'none' }}
-                        />
-
-                        <div style={{ fontSize: '15px', color: '#0c2c1b', fontFamily: "'DM Sans', sans-serif", display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            {blog.series && <span><b>Series:</b> {blog.series}</span>}
-                            <span><b>Categories:</b> {blog.categoryIds ? getCategoryNames(blog.categoryIds) : ''}</span>
-                            <span><b>Unique commenters:</b> {blog.numberOfUniqueCommenters}</span>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '24px' }}>
+                            {blog.categoryIds && getCategoryNames(blog.categoryIds).split(', ').map((category: string) => (
+                                <span key={category} style={{ fontSize: '10px', color: '#6a8e6e', border: '1px solid #2a4a2e', padding: '2px 7px', borderRadius: '10px', letterSpacing: '0.5px', textTransform: 'uppercase', fontFamily: "'Lato', sans-serif" }}>
+                                    {category}
+                                </span>
+                            ))}
+                            <span style={{ fontSize: '11px', color: '#5a7a5e', fontFamily: "'Lato', sans-serif" }}>
+                                {blog.numberOfUniqueCommenters} unique {blog.numberOfUniqueCommenters === 1 ? 'commenter' : 'commenters'}
+                            </span>
                         </div>
 
+
                         {userId === blog.creatorId && (
-                            <div style={{ display: 'flex', gap: '12px', marginTop: '20px', justifyContent: 'center', alignItems: 'center' }}>
-                                <Button variant="contained" onClick={() => navigate('/blogs/' + id + '/edit')}
-                                    sx={{ backgroundColor: "#0c2c1b", "&:hover": { backgroundColor: "#071a10" }, fontFamily: "'DM Sans', sans-serif" }}>
-                                    Edit Blog
+                            <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+                                <Button variant="outlined" size="small"
+                                    onClick={() => navigate('/blogs/' + id + '/edit')}
+                                    sx={{ color: '#a8c5a0', borderColor: '#3a5c3e', "&:hover": { borderColor: '#5a8a5e', background: '#5a8a5e1a' }, fontFamily: "'Lato', sans-serif", textTransform: 'none', fontSize: '12px' }}>
+                                    EDIT
                                 </Button>
-                                <Button variant="outlined" color="error" onClick={handleDeleteDialogOpen}
-                                    sx={{ fontFamily: "'DM Sans', sans-serif" }}>
-                                    Delete Blog
+                                <Button variant="outlined" size="small"
+                                    onClick={() => setOpenDeleteDialog(true)}
+                                    sx={{ color: '#c87a7a', borderColor: '#5a2e2e', '&:hover': { borderColor: '#8a4a4a', background: '#c87a7a1a' }, fontFamily: "'Lato', sans-serif", textTransform: 'none', fontSize: '12px' }}>
+                                    DELETE
                                 </Button>
                             </div>
                         )}
+
+                        <div style={{ borderTop: '1px solid #1e3320', marginBottom: '32px' }} />
+
+                {/*reactions*/}
+                <div style={{ marginBottom: '40px' }}>
+                    <div style={{ fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', color: '#4a6a4e', fontFamily: "'Lato', sans-serif", marginBottom: '16px' }}>
+                        Reactions
+                    </div>
+                    {blog.creatorId === userId && (
+                        <p style={{ color: '#5a7a5e', fontSize: '12px', fontFamily: "'Lato', sans-serif", marginBottom: '12px' }}>You can't react to your own blog</p>
+                    )}
+                    {!authToken && (
+                        <p style={{ fontSize: '12px', fontFamily: "'Lato', sans-serif", color: '#7a9e7e', marginBottom: '12px' }}>
+                            <Link to="/login" style={{ color: '#a8c87a' }}>Log in</Link> to react
+                        </p>
+                    )}
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                        {['REACTION_1', 'REACTION_2', 'REACTION_3', 'REACTION_4', 'REACTION_5'].map((r) => (
+                            <button
+                                key={r}
+                                onClick={() => reactToBlog(r)}
+                                disabled={blog.creatorId === userId}
+                                style={{
+                                    background: userReaction === r ? '#2d5a30' : '#1a2e1c',
+                                    border: userReaction === r ? '1px solid #4a8a4e' : '1px solid #2a4a2e',
+                                    borderRadius: '8px',
+                                    padding: '8px 14px',
+                                    cursor: blog.creatorId === userId ? 'default' : 'pointer',
+                                    color: '#e8e0d0',
+                                    fontFamily: "'Lato', sans-serif",
+                                    fontSize: '14px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    opacity: blog.creatorId === userId ? 0.5 : 1,
+                                    transition: 'all 0.15s'
+                                }}>
+                                {reactionEmojis[r]}
+                                <span style={{ fontSize: '12px', color: '#9aba9a' }}>{getReactionCount(r)}</span>
+                            </button>
+                        ))}
                     </div>
                 </div>
 
-                <div style={{ background: 'white', border: '1px solid #0c2c1b', borderRadius: '12px', padding: '24px', marginBottom: '20px' }}>
-                    <h2 style={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', margin: '0 0 12px' }}>Reactions</h2>
-                    {blog.creatorId === userId && (
-                        <p style={{ color: '#6e6e6e', fontSize: '14px', fontFamily: "'DM Sans', sans-serif" }}>You can't react to your own blog</p>
-                    )}
-                    {!authToken && (
-                        <p style={{ fontSize: '14px', fontFamily: "'DM Sans', sans-serif" }}>
-                            <Link to="/login" style={{ color: '#0c2c1b' }}>Log in</Link> to react
-                        </p>
-                    )}
-                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '32px' }}>
-                        {['REACTION_1', 'REACTION_2', 'REACTION_3', 'REACTION_4', 'REACTION_5'].map((r) => (
-                            <Button
-                                key={r}
-                                variant={userReaction === r ? 'contained' : 'outlined'}
-                                onClick={() => reactToBlog(r)}
-                                disabled={blog.creatorId === userId}
-                                sx={userReaction === r ?
-                                    { backgroundColor: "#0c2c1b", "&:hover": { backgroundColor: "#071a10" }, fontFamily: "'DM Sans', sans-serif" } :
-                                    { color: "#0c2c1b", borderColor: "#0c2c1b", fontFamily: "'DM Sans', sans-serif" }}>
-                                {reactionEmojis[r]} {getReactionCount(r)}
-                            </Button>
-                        ))}
+                <div style={{ borderTop: '1px solid #1e3320', marginBottom: '32px' }} />
+
+                {/*comments*/}
+                <div>
+                    <div style={{ fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', color: '#4a6a4e', fontFamily: "'Lato', sans-serif", marginBottom: '20px' }}>
+                        Comments
                     </div>
 
-                    <h2 style={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', margin: '0 0 16px' }}>Comments</h2>
-
                     {authToken ? (
-                        <div style={{ marginBottom: '4px' }}>
+                        <div style={{ marginBottom: '32px' }}>
                             <textarea
                                 placeholder="Write a comment..."
                                 value={newComment}
                                 onChange={(e) => setNewComment(e.target.value)}
-                                style={{ width: '100%', padding: '12px', fontSize: '15px', borderRadius: '8px', border: '1px solid #0c2c1b', fontFamily: "'DM Sans', sans-serif", boxSizing: 'border-box' as any, minHeight: '80px', resize: 'none' }}
+                                className="dark-placeholder"
+                                style={{ width: '100%', padding: '12px', fontSize: '13px', borderRadius: '6px', border: '1px solid #2a4a2e', fontFamily: "'Lato', sans-serif", boxSizing: 'border-box', minHeight: '80px', resize: 'none', background: '#1a2e1c', color: '#c8d8c0', outline: 'none' }}
                             />
-                            <Button variant="contained" onClick={postComment}
-                                sx={{ backgroundColor: "#0c2c1b", "&:hover": { backgroundColor: "#071a10" }, marginTop: '12px', fontFamily: "'DM Sans', sans-serif", marginBottom: '16px' }}>
+                            <button
+                                onClick={postComment}
+                                style={{ marginTop: '8px', background: '#2d5a30', border: '1px solid #4a8a4e', color: '#c8e8c0', fontFamily: "'Lato', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', padding: '8px 20px', borderRadius: '4px', cursor: 'pointer' }}>
                                 Post Comment
-                            </Button>
+                            </button>
                         </div>
                     ) : (
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', marginBottom: '16px' }}>
-                            <Link to="/login" style={{ color: '#0c2c1b' }}>Log in</Link> to leave a comment
+                        <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '12px', color: '#7a9e7e', marginBottom: '24px' }}>
+                            <Link to="/login" style={{ color: '#a8c87a' }}>Log in</Link> to leave a comment
                         </p>
                     )}
 
                     {getTopLevelComments().map((comment: any) => (
-                        <div key={comment.commentId} style={{ borderTop: '1px solid #eee', paddingTop: '16px', marginBottom: '16px', textAlign: 'left' }}>
+                        <div key={comment.commentId} style={{ borderTop: '1px solid #1a2e1c', paddingTop: '20px', marginBottom: '20px' }}>
                             <div
                                 onClick={() => navigate('/profile/' + comment.commenterId)}
-                                style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', cursor: 'pointer' }}>
+                                style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px', cursor: 'pointer' }}>
                                 <img
                                     src={'http://localhost:4941/api/v1/users/' + comment.commenterId + '/image'}
-                                    alt="Commenter"
-                                    style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b' }}
+                                    alt="Commenter pfp"
+                                    style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #2a4a2e', flexShrink: 0 }}
                                     onError={(e: any) => { e.target.src = defaultPfp }}
                                 />
                                 <div>
-                                    <span style={{ fontWeight: 600, fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: '#0c2c1b', wordBreak: 'break-word' }}>
+                                    <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '13px', color: '#c8d8c0', fontWeight: 600 }}>
                                         {comment.commenterFirstName} {comment.commenterLastName}
                                     </span>
-                                    <span style={{ color: '#6e6e6e', fontSize: '12px', marginLeft: '8px', fontFamily: "'DM Sans', sans-serif", wordBreak: 'break-word' }}>
+                                    <span style={{ color: '#4a6a4e', fontSize: '11px', marginLeft: '8px', fontFamily: "'Lato', sans-serif" }}>
                                         {new Date(comment.timestamp).toLocaleString('en-NZ')}
                                     </span>
                                 </div>
                             </div>
-                            <p style={{ color: '#0c2c1b', margin: '0 0 8px', fontFamily: "'DM Sans', sans-serif", fontSize: '15px', paddingLeft: '42px', wordBreak: 'break-word' }}>
+                            <p style={{ color: '#9aba9a', margin: '0 0 8px', fontFamily: "'Lato', sans-serif", fontSize: '13px', paddingLeft: '40px', wordBreak: 'break-word', lineHeight: 1.6 }}>
                                 {comment.comment}
                             </p>
-                            <p style={{ color: '#6e6e6e', fontSize: '13px', fontFamily: "'DM Sans', sans-serif", paddingLeft: '42px', margin: '0 0 4px' }}>
-                                {getReplies(comment.commentId).length} {getReplies(comment.commentId).length === 1 ? 'reply' : 'replies'}
-                            </p>
-                            {authToken && (
-                                <Button size="small" onClick={() => setReplyingTo(replyingTo === comment.commentId ? null : comment.commentId)}
-                                    sx={{ color: "#0c2c1b", fontFamily: "'DM Sans', sans-serif", fontSize: '12px', paddingLeft: '42px' }}>
-                                    {replyingTo === comment.commentId ? 'Cancel' : 'Reply'}
-                                </Button>
-                            )}
+                            <div style={{ paddingLeft: '40px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <span style={{ color: '#4a6a4e', fontSize: '11px', fontFamily: "'Lato', sans-serif" }}>
+                                    {getReplies(comment.commentId).length} {getReplies(comment.commentId).length === 1 ? 'reply' : 'replies'}
+                                </span>
+                                {authToken && (
+                                    <button
+                                        onClick={() => setReplyingTo(replyingTo === comment.commentId ? null : comment.commentId)}
+                                        style={{ background: 'none', border: 'none', color: '#6a9a6e', fontFamily: "'Lato', sans-serif", fontSize: '11px', cursor: 'pointer', padding: 0, letterSpacing: '0.5px' }}>
+                                        {replyingTo === comment.commentId ? 'Cancel' : 'Reply'}
+                                    </button>
+                                )}
+                            </div>
+
                             {replyingTo === comment.commentId && (
-                                <div style={{ marginTop: '8px', paddingLeft: '42px' }}>
+                                <div style={{ marginTop: '12px', paddingLeft: '40px' }}>
                                     <textarea
                                         placeholder="Write a reply..."
                                         value={replyText}
                                         onChange={(e) => setReplyText(e.target.value)}
-                                        style={{ width: '100%', padding: '10px', fontSize: '14px', borderRadius: '8px', border: '1px solid #0c2c1b', fontFamily: "'DM Sans', sans-serif", boxSizing: 'border-box' as any, minHeight: '60px', resize: 'none' }}
+                                        className="dark-placeholder"
+                                        style={{ width: '100%', padding: '10px', fontSize: '13px', borderRadius: '6px', border: '1px solid #2a4a2e', fontFamily: "'Lato', sans-serif", boxSizing: 'border-box', minHeight: '60px', resize: 'none', background: '#1a2e1c', color: '#c8d8c0', outline: 'none' }}
                                     />
-                                    <Button variant="contained" size="small" onClick={() => postReply(comment.commentId)}
-                                        sx={{ backgroundColor: "#0c2c1b", "&:hover": { backgroundColor: "#071a10" }, marginTop: '4px', fontFamily: "'DM Sans', sans-serif" }}>
+                                    <button
+                                        onClick={() => postReply(comment.commentId)}
+                                        style={{ marginTop: '6px', background: '#2d5a30', border: '1px solid #4a8a4e', color: '#c8e8c0', fontFamily: "'Lato', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', padding: '6px 16px', borderRadius: '4px', cursor: 'pointer' }}>
                                         Post Reply
-                                    </Button>
+                                    </button>
                                 </div>
                             )}
+
                             {getReplies(comment.commentId).length > 0 && (
-                                <div style={{ marginLeft: '42px', marginTop: '12px', borderLeft: '2px solid #eee', paddingLeft: '16px' }}>
+                                <div style={{ marginLeft: '40px', marginTop: '12px', borderLeft: '2px solid #1a2e1c', paddingLeft: '16px' }}>
                                     {getReplies(comment.commentId).map((reply: any) => (
                                         <div key={reply.commentId} style={{ marginBottom: '12px' }}>
                                             <div
@@ -448,18 +454,18 @@ const Blog = () => {
                                                 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', cursor: 'pointer' }}>
                                                 <img
                                                     src={'http://localhost:4941/api/v1/users/' + reply.commenterId + '/image'}
-                                                    alt="Replier"
-                                                    style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b' }}
+                                                    alt="Replier pfp"
+                                                    style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #2a4a2e' }}
                                                     onError={(e: any) => { e.target.src = defaultPfp }}
                                                 />
-                                                <span style={{ fontWeight: 600, fontFamily: "'DM Sans', sans-serif", fontSize: '13px', color: '#0c2c1b', wordBreak: 'break-word' }}>
+                                                <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '12px', color: '#c8d8c0', fontWeight: 600 }}>
                                                     {reply.commenterFirstName} {reply.commenterLastName}
                                                 </span>
-                                                <span style={{ color: '#6e6e6e', fontSize: '12px', fontFamily: "'DM Sans', sans-serif" }}>
+                                                <span style={{ color: '#4a6a4e', fontSize: '11px', fontFamily: "'Lato', sans-serif" }}>
                                                     {new Date(reply.timestamp).toLocaleString('en-NZ')}
                                                 </span>
                                             </div>
-                                            <p style={{ margin: 0, fontFamily: "'DM Sans', sans-serif", fontSize: '14px', paddingLeft: '32px', color: '#0c2c1b', wordBreak: 'break-word' }}>
+                                            <p style={{ margin: 0, fontFamily: "'Lato', sans-serif", fontSize: '13px', paddingLeft: '30px', color: '#9aba9a', wordBreak: 'break-word', lineHeight: 1.6 }}>
                                                 {reply.comment}
                                             </p>
                                         </div>
@@ -469,98 +475,103 @@ const Blog = () => {
                         </div>
                     ))}
                 </div>
+            </div>
 
-                {similarBlogs.length > 0 && (
-                    <div style={{ background: 'white', border: '1px solid #0c2c1b', borderRadius: '12px', padding: '24px', marginBottom: '20px' }}>
-                        <h2 style={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b', margin: '0 0 16px' }}>
-                            Want to Read More? You Might Also Like...
-                        </h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-                            {similarBlogs.map((b: any) => (
-                                <div key={b.blogId} style={{ border: '1px solid #0c2c1b', borderRadius: '10px', overflow: 'hidden' }}>
+            {/*similar blogs*/}
+            {similarBlogs.length > 0 && (
+                <div style={{ borderTop: '1px solid #1e3320', marginTop: '20px' }}>
+                    <div style={{ padding: '14px 20px 6px', fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', color: '#4a6a4e', fontFamily: "'Lato', sans-serif" }}>
+                        You might also like
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#1a2e1c' }}>
+                        {similarBlogs.map((b: any) => (
+                            <div
+                                key={b.blogId}
+                                onClick={() => navigate('/blogs/' + b.blogId)}
+                                onMouseEnter={(e) => (e.currentTarget.style.background = '#162318')}
+                                onMouseLeave={(e) => (e.currentTarget.style.background = '#111e13')}
+                                style={{ background: '#111e13', overflow: 'hidden', cursor: 'pointer', transition: 'background 0.2s' }}>
+                                <div style={{ position: 'relative', height: '160px', background: '#1a3320', overflow: 'hidden' }}>
                                     <img
                                         src={'http://localhost:4941/api/v1/blogs/' + b.blogId + '/image'}
                                         alt={b.title}
-                                        style={{ width: '100%', height: '130px', objectFit: 'cover' }}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                                         onError={(e: any) => { e.target.style.display = 'none' }}
                                     />
-
-                                    <div style={{ padding: '12px' }}>
-                                        <p style={{ margin: '0 0 8px', fontWeight: 700, fontFamily: "'Cormorant Garamond', serif", fontSize: '20px', color: '#0c2c1b', wordBreak: 'break-word', textDecoration: 'underline', lineHeight: '1.1' }}>{b.title}</p>
-
-                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', margin: '0 0 4px' }}>
-                                            <img
-                                                src={'http://localhost:4941/api/v1/users/' + b.creatorId + '/image'}
-                                                alt="Creator"
-                                                style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #0c2c1b' }}
-                                                onError={(e: any) => { e.target.src = defaultPfp }}
-                                            />
-                                            <p style={{ margin: 0, fontSize: '14px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif", wordBreak: 'break-word' }}>
-                                                By {b.creatorFirstName} {b.creatorLastName}
-                                            </p>
-                                        </div>
-
-                                        <p style={{ margin: '0 0 4px', fontSize: '13px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif" }}>
-                                            {new Date(b.creationDate).toLocaleDateString('en-NZ')}
-                                        </p>
-                                        <p style={{ margin: '0 0 4px', fontSize: '13px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif" }}>
-                                            📍 {getCityName(b.cityId)}
-                                        </p>
-                                        <p style={{ margin: '0 0 2px', fontSize: '13px', color: '#6e6e6e', fontFamily: "'DM Sans', sans-serif" }}>
-                                            {getCategoryNames(b.categoryIds)}
-                                        </p>
-                                        <p style={{ margin: '0 0 8px', fontSize: '14px', fontFamily: "'DM Sans', sans-serif", color: '#6e6e6e' }}>♡ {b.numReactions} {b.numReactions === 1 ? 'reaction' : 'reactions'}</p>
-                                        <Button variant="contained" size="small" component={Link} to={"/blogs/" + b.blogId}
-                                            sx={{ backgroundColor: "#0c2c1b", "&:hover": { backgroundColor: "#071a10" }, fontFamily: "'DM Sans', sans-serif" }}>
-                                            View
-                                        </Button>
+                                    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px 16px 8px', background: 'linear-gradient(to top, #0a1209cc 0%, transparent 100%)' }}>
+                                        <span style={{ fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#a8c8a0', fontFamily: "'Lato', sans-serif" }}>
+                                            {getCityName(b.cityId)}
+                                        </span>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                                <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '16px', color: '#e0d8c8', lineHeight: 1.35, fontWeight: 400 }}>
+                                        {b.title}
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <img
+                                            src={'http://localhost:4941/api/v1/users/' + b.creatorId + '/image'}
+                                            alt="Creator pfp"
+                                            style={{ width: '18px', height: '18px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #2a4a2e', flexShrink: 0 }}
+                                            onError={(e: any) => { e.target.src = defaultPfp }}
+                                        />
+                                        <span style={{ fontSize: '12px', color: '#7a9e7e', fontFamily: "'Lato', sans-serif" }}>
+                                            {b.creatorFirstName} {b.creatorLastName}
+                                        </span>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                                        {getCategoryNames(b.categoryIds).split(', ').map((category: string) => (
+                                            <span key={category} style={{ fontSize: '10px', color: '#6a8e6e', border: '1px solid #2a4a2e', padding: '2px 7px', borderRadius: '10px', letterSpacing: '0.5px', textTransform: 'uppercase', fontFamily: "'Lato', sans-serif" }}>
+                                                {category}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div style={{ padding: '8px 16px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #1a2e1c' }}>
+                                    <span style={{ fontSize: '11px', color: '#5a7a5e', fontFamily: "'Lato', sans-serif" }}>
+                                        {new Date(b.creationDate).toLocaleDateString('en-NZ')}
+                                    </span>
+                                    <span style={{ fontSize: '11px', color: '#6a8e6e', fontFamily: "'Lato', sans-serif", display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <span>♡</span>
+                                        <span>{b.numReactions} {b.numReactions === 1 ? 'reaction' : 'reactions'}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                )}
-            </div>
+                </div>
+            )}
 
-            <Dialog open={openDeleteDialog} onClose={handleDeleteDialogClose}>
+            {/*delete dialog*/}
+            <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}
+                slotProps={{ paper: { sx: { background: '#111e13', border: '1px solid #1e3320' } } }}>
                 <DialogContent>
-                    <DialogContentText sx={{ fontFamily: "'DM Sans', sans-serif", color: '#0c2c1b' }}>
+                    <DialogContentText sx={{ fontFamily: "'Lato', sans-serif", color: '#c8d8c0' }}>
                         {blog.numberOfUniqueCommenters > 0
                             ? "This blog can't be deleted because it has comments."
-                            : "Are you sure you want to delete this blog?"
-                        }
+                            : "Are you sure you want to delete this blog?"}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button
-                        onClick={handleDeleteDialogClose}
-                        sx={{ color: "#0c2c1b", fontFamily: "'DM Sans', sans-serif" }}>
+                    <Button onClick={() => setOpenDeleteDialog(false)} sx={{ color: '#7a9e7e', fontFamily: "'Lato', sans-serif" }}>
                         {blog.numberOfUniqueCommenters > 0 ? "Close" : "Cancel"}
                     </Button>
                     {blog.numberOfUniqueCommenters === 0 && (
-                        <Button
-                            variant="outlined"
-                            color="error"
-                            onClick={deleteBlog}
-                            sx={{ fontFamily: "'DM Sans', sans-serif" }}>
+                        <Button variant="outlined" onClick={deleteBlog}
+                            sx={{ color: '#c87a7a', borderColor: '#5a2e2e', fontFamily: "'Lato', sans-serif" }}>
                             Delete
                         </Button>
                     )}
                 </DialogActions>
             </Dialog>
 
-            <Snackbar
-                autoHideDuration={3000}
-                open={snackOpen}
-                onClose={handleSnackClose}
-                key={snackMessage}>
-                <Alert onClose={handleSnackClose} severity="success" sx={{ width: '100%' }}>
+            <Snackbar autoHideDuration={3000} open={snackOpen} onClose={() => setSnackOpen(false)} key={snackMessage}>
+                <Alert onClose={() => setSnackOpen(false)} severity="success" sx={{ width: '100%' }}>
                     {snackMessage}
                 </Alert>
             </Snackbar>
         </div>
     )
-
 }
 
 export default Blog;
