@@ -319,7 +319,7 @@ const Profile = () => {
                 {getBlogsWithNoSeries().length > 0 && (
                     <>
                         <div style={{ fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', color: '#4a6a4e', fontFamily: "'Lato', sans-serif", margin: '24px 0 16px' }}>
-                            Other stories
+                            Individual Stories
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#1a2e1c' }}>
                             {getBlogsWithNoSeries().map((blog: any) => blogCard(blog))}
