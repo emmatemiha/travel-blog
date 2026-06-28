@@ -210,9 +210,6 @@ const Blogs = () => {
                     display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderBottom: '1px solid #1e3320' }}>
                         
                     <div style={{ position: 'relative', zIndex: 1, padding: '0 40px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '9px', letterSpacing: '4px', color: '#7aba7a', textTransform: 'uppercase', marginBottom: '10px', fontFamily: "'Lato', sans-serif" }}>
-                            Exploring New Zealand
-                        </div>
                         <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '38px', color: '#f0e8d8', fontWeight: 400, margin: '0 0 4px', lineHeight: 1.2 }}>
                             Stories from
                         </h1>

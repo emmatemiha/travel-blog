@@ -334,16 +334,6 @@ const Profile = () => {
                 )}
             </div>
 
-
-
-
-
-{/*UNSURE ABOUT THIS BIT AS SCREEN IS JUST GREEN BUT IT DOESNT INCLUDE ALL THE SERIES AND NOT SERIES I THINK SO JUST CHECK*/}
-
-
-
-
-
             {/*edit profile*/}
             <Dialog open={openEditDialog} onClose={handleEditDialogClose} fullWidth maxWidth="sm"
                 slotProps={{ paper: { sx: { background: '#111e13', border: '1px solid #1e3320' } } }}>
