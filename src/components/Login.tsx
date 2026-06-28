@@ -15,7 +15,7 @@ const Login = () => {
     const navigate = useNavigate()
 
     const inputStyle = {
-        height: '56px',
+        height: '48px',
         padding: '0 14px',
         fontSize: '14px',
         borderRadius: '4px',
