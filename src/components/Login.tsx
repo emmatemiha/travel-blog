@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React from "react";
 import { useNavigate, Link } from 'react-router-dom';
-import { Alert, Button } from "@mui/material";
+import { Alert } from "@mui/material";
 import { useAuthStore } from "../store";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
@@ -48,9 +48,6 @@ const Login = () => {
     return (
         <div style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f1a12' }}>
             <div style={{ width: '380px', background: '#111e13', border: '1px solid #1e3320', borderRadius: '8px', padding: '36px' }}>
-                <div style={{ fontSize: '9px', letterSpacing: '3px', textTransform: 'uppercase', color: '#4a6a4e', fontFamily: "'Lato', sans-serif", textAlign: 'center', marginBottom: '8px' }}>
-                    Welcome back
-                </div>
                 <h1 style={{ textAlign: 'center', color: '#f0e8d8', fontFamily: "'Playfair Display', serif", margin: '0 0 28px', fontSize: '28px', fontWeight: 400 }}>
                     Log in
                 </h1>
